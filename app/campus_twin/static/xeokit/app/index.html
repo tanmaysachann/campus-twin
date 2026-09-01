@@ -310,8 +310,9 @@
                 if (focusIds.length) {
                     scene.setObjectsXRayed(allIds, true);
                     scene.setObjectsXRayed(focusIds, false);
-                    scene.setObjectsColorized(focusIds, selection.kind === "room" ? [0.94, 0.29, 0.21] : [0.12, 0.63, 0.34]);
-                    scene.setObjectsSelected(focusIds, true);
+                    if (selection.kind === "room") {
+                        scene.setObjectsColorized(focusIds, [0.94, 0.29, 0.21]);
+                    }
                     if (state.focus !== false) bimViewer.viewFitObjects(rootIds.length ? rootIds : focusIds);
                 }
                 return;
@@ -332,36 +333,29 @@
             if (layer === "schedule") {
                 focusIds = openings.length ? openings : allIds.slice(0, Math.max(8, Math.ceil(allIds.length * 0.05)));
                 scene.setObjectsColorized(focusIds, [0.94, 0.29, 0.21]);
-                scene.setObjectsSelected(focusIds, true);
             } else if (layer === "capacity") {
                 focusIds = spaces.length ? spaces : walls.slice(0, Math.max(12, Math.ceil(walls.length * 0.18)));
                 scene.setObjectsColorized(focusIds, [0.12, 0.63, 0.34]);
-                scene.setObjectsSelected(focusIds, true);
             } else if (layer === "energy") {
                 focusIds = services.length ? services : openings;
                 scene.setObjectsXRayed(allIds, true);
                 scene.setObjectsXRayed(focusIds, false);
                 scene.setObjectsColorized(focusIds, [0.23, 0.67, 0.91]);
-                scene.setObjectsSelected(focusIds, true);
             } else if (stage === 1) {
                 focusIds = spaces.length ? spaces : walls.slice(0, Math.max(10, Math.ceil(walls.length * 0.12)));
                 scene.setObjectsColorized(focusIds, [0.89, 0.55, 0.08]);
-                scene.setObjectsSelected(focusIds, true);
             } else if (stage === 2) {
                 focusIds = walls.slice(0, Math.max(14, Math.ceil(walls.length * 0.2)));
                 if (!focusIds.length) focusIds = allIds.slice(0, Math.max(14, Math.ceil(allIds.length * 0.08)));
                 scene.setObjectsColorized(focusIds, [0.82, 0.12, 0.09]);
-                scene.setObjectsSelected(focusIds, true);
             } else if (stage === 3) {
                 focusIds = [...openings, ...spaces].slice(0, Math.max(24, Math.ceil((openings.length + spaces.length) * 0.45)));
                 scene.setObjectsXRayed(walls, true);
                 scene.setObjectsColorized(focusIds, [0.14, 0.66, 0.34]);
-                scene.setObjectsSelected(focusIds, true);
             } else if (stage >= 4) {
                 focusIds = services.length ? services : openings;
                 scene.setObjectsXRayed(walls, true);
                 scene.setObjectsColorized(focusIds, [0.72, 1.0, 0.13]);
-                scene.setObjectsSelected(focusIds, true);
             }
 
             if (storeys.length && (state.buildingIndex !== undefined || state.floor !== undefined)) {

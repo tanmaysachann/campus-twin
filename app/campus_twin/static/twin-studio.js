@@ -72,7 +72,7 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
     layer: "scenario",
     stage: 0,
     selectedRoomId: null,
-    focusKind: "floor",
+    focusKind: null,
   };
   let data = {
     rooms: [], schedule: [], buildings: [], energy: [], buildingPressure: [],
