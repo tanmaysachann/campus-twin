@@ -750,11 +750,17 @@ async def genie_chat(payload: GenieRequest, request: Request, runtime: RuntimeCo
             space_id = None
     service = IntelligenceService(runtime.genie)
     try:
-        return await service.answer(snapshot, payload.question, genie_space_id=space_id, conversation_id=payload.conversation_id)
+        return await service.answer(
+            snapshot,
+            payload.question,
+            genie_space_id=space_id,
+            conversation_id=payload.conversation_id,
+            context=payload.context,
+        )
     except Exception as exc:
         if settings.data_mode == "databricks":
             raise HTTPException(status_code=502, detail=f"Genie request failed: {exc}") from exc
-        return await IntelligenceService(None).answer(snapshot, payload.question)
+        return await IntelligenceService(None).answer(snapshot, payload.question, context=payload.context)
 
 
 @router.post("/feedback", response_model=FeedbackRecord)

@@ -74,19 +74,6 @@
             enableEditModels: enableEditModels
         });
 
-        const cameraControl = bimViewer.viewer.cameraControl;
-        cameraControl.navMode = "orbit";
-        cameraControl.followPointer = true;
-        cameraControl.doublePickFlyTo = true;
-        cameraControl.keyboardEnabledOnlyIfMouseover = true;
-        cameraControl.dragRotationRate = 190;
-        cameraControl.mouseWheelDollyRate = 55;
-        cameraControl.touchDollyRate = 0.12;
-        cameraControl.rotationInertia = 0.14;
-        cameraControl.panInertia = 0.18;
-        cameraControl.dollyInertia = 0.1;
-        bimViewer.viewer.cameraFlight.duration = 0.38;
-
         bimViewer.localeService.on("updated", () => {
             const localizedElements = document.querySelectorAll('.xeokit-i18n');
             localizedElements.forEach((localizedElement) => {
@@ -320,12 +307,15 @@
             const cellMaxX = xmin + ((xmax - xmin) * (column + 1) / columns);
             const cellMinZ = zmin + ((zmax - zmin) * row / rows);
             const cellMaxZ = zmin + ((zmax - zmin) * (row + 1) / rows);
-            const intersectsCell = objectId => {
+            const centerInCell = objectId => {
                 const aabb = scene.objects[objectId]?.aabb;
-                return aabb && aabb[3] >= cellMinX && aabb[0] <= cellMaxX
-                    && aabb[5] >= cellMinZ && aabb[2] <= cellMaxZ;
+                if (!aabb) return false;
+                const centerX = (aabb[0] + aabb[3]) / 2;
+                const centerZ = (aabb[2] + aabb[5]) / 2;
+                return centerX >= cellMinX && centerX <= cellMaxX
+                    && centerZ >= cellMinZ && centerZ <= cellMaxZ;
             };
-            let result = candidates.filter(intersectsCell);
+            let result = candidates.filter(centerInCell);
             if (!result.length) {
                 const centerX = (cellMinX + cellMaxX) / 2;
                 const centerZ = (cellMinZ + cellMaxZ) / 2;
@@ -340,7 +330,7 @@
                     .slice(0, Math.max(12, Math.ceil(candidates.length / count)))
                     .map(item => item[0]);
             }
-            return [...new Set([...result, ...roofObjectIds.filter(intersectsCell)])];
+            return [...new Set([...result, ...roofObjectIds.filter(centerInCell)])];
         }
 
         function resetCampusTwinAppearance() {
@@ -377,6 +367,35 @@
             if (!allIds.length) return;
 
             const selection = state.selection;
+            const scenarioHighlights = state.scenarioHighlights || [];
+            if (scenarioHighlights.length) {
+                const allFocusIds = [];
+                // Keep the complete BIM model visible while scenario spaces stand out.
+                // Moderate transparency exposes internal rooms without reducing the
+                // surrounding building to a faint wireframe.
+                scene.setObjectsOpacity(allIds, 0.58);
+                for (const impact of scenarioHighlights) {
+                    const directIds = (impact.objectIds || []).filter(objectId => scene.objects[objectId]);
+                    const impactIds = [...new Set([
+                        ...renderableObjectIdsInSubtrees(impact.rootObjectIds || []),
+                        ...directIds
+                    ])];
+                    if (!impactIds.length) continue;
+                    allFocusIds.push(...impactIds);
+                    scene.setObjectsXRayed(impactIds, false);
+                    scene.setObjectsOpacity(impactIds, 1.0);
+                    const color = impact.role === "source"
+                        ? [0.94, 0.29, 0.21]
+                        : impact.role === "destination"
+                            ? [0.14, 0.66, 0.34]
+                            : [0.89, 0.55, 0.08];
+                    scene.setObjectsColorized(impactIds, color);
+                }
+                if (state.focus !== false && allFocusIds.length) {
+                    bimViewer.viewFitObjects([...new Set(allFocusIds)]);
+                }
+                return;
+            }
             if (selection?.kind === "building") {
                 const blockIds = buildingBlockObjectIds(selection.buildingIndex, selection.buildingCount);
                 if (blockIds.length) {
@@ -452,19 +471,6 @@
             }
         }
 
-        function setCampusTwinCameraView(view) {
-            const scene = bimViewer.viewer.scene;
-            const ids = scene.objectIds || [];
-            if (!ids.length) return;
-            const [xmin, ymin, zmin, xmax, ymax, zmax] = scene.getAABB(ids);
-            const center = [(xmin + xmax) / 2, (ymin + ymax) / 2, (zmin + zmax) / 2];
-            const diagonal = Math.max(Math.hypot(xmax - xmin, ymax - ymin, zmax - zmin), 1);
-            const target = view === "top"
-                ? { eye: [center[0], center[1] + diagonal, center[2]], look: center, up: [0, 0, -1] }
-                : { eye: [center[0] + diagonal * 0.72, center[1] + diagonal * 0.58, center[2] + diagonal * 0.72], look: center, up: [0, 1, 0] };
-            bimViewer.viewer.cameraFlight.flyTo(target);
-        }
-
         function announceWhenReady() {
             let attempts = 0;
             const timer = window.setInterval(() => {
@@ -487,11 +493,18 @@
             }, 250);
         }
 
+        bimViewer.viewer.scene.on("objectSelected", (entity) => {
+            if (!entity?.selected) return;
+            window.parent.postMessage({
+                type: "campus-twin-xeokit-selection",
+                objectId: entity.id
+            }, window.location.origin);
+        });
+
         window.addEventListener("message", (event) => {
             if (event.origin !== window.location.origin || event.source !== window.parent) return;
             if (event.data?.type === "campus-twin-xeokit-state") applyCampusTwinState(event.data.state);
             if (event.data?.type === "campus-twin-xeokit-fit") bimViewer.viewFitAll();
-            if (event.data?.type === "campus-twin-xeokit-view" && event.data.view) setCampusTwinCameraView(event.data.view);
             if (event.data?.type === "campus-twin-xeokit-tab" && event.data.tab) bimViewer.openTab(event.data.tab);
         });
 

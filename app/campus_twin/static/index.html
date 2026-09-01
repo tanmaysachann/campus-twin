@@ -8,7 +8,7 @@
   <meta name="description" content="A Genie-powered campus decision twin for asking questions, testing interventions, and learning from outcomes." />
   <title>CampusTwin | Ask. Simulate. Decide.</title>
   <link rel="icon" href="/static/favicon.svg" />
-  <link rel="stylesheet" href="/static/styles.css" />
+  <link rel="stylesheet" href="/static/styles.css?v=scenario-context-5" />
 </head>
 <body>
   <div class="shell">
@@ -48,7 +48,7 @@
 
     <main class="workspace">
       <header class="topbar">
-        <div class="breadcrumb"><span>CampusTwin</span><i>/</i><label class="workspace-switcher"><span class="sr-only">Switch workspace</span><select id="workspaceSwitcher" aria-label="Switch workspace"><option value="overview">Campus pulse</option><option value="genie">Ask Genie</option><option value="studio">Twin Studio</option><option value="simulate">Scenario lab</option><option value="explore">Data atlas</option><option value="feedback">Outcome loop</option></select></label><strong id="viewCrumb" class="sr-only">Campus pulse</strong></div>
+        <div class="breadcrumb"><span>CampusTwin</span><i>/</i><strong id="viewCrumb">Campus pulse</strong></div>
         <div class="decision-path" aria-label="Decision workflow">
           <span>QUESTION</span><i></i><span>EVIDENCE</span><i></i><span>SCENARIO</span><i></i><span>DECISION</span>
         </div>
@@ -261,9 +261,7 @@
               <div><h2 id="studioModelTitle">BMSCE approximate BIM demo</h2><span class="panel-context" id="studioModelContext">LOADING XEOKIT MODEL DATABASE</span></div>
               <div class="studio-head-tools">
                 <div class="studio-view-controls" aria-label="Model view controls">
-                  <button type="button" data-xeokit-view="iso">ISO</button>
-                  <button type="button" data-xeokit-view="top">TOP</button>
-                  <button type="button" data-xeokit-action="fit">FIT</button>
+                  <button type="button" data-xeokit-action="fit">FIT MODEL</button>
                   <button type="button" data-xeokit-tab="storeys">STOREYS</button>
                   <button type="button" data-xeokit-tab="models">MODELS</button>
                   <button type="button" data-xeokit-tab="objects">OBJECTS</button>
@@ -275,9 +273,8 @@
                 <strong>LOADING XEOKIT BIM DATABASE</strong>
                 <span>Architecture, building services, and structural XKT models</span>
               </div>
-              <iframe id="xeokitViewer" title="Interactive xeokit BIM Viewer" src="/static/xeokit/app/index.html?projectId=BMSCampus&amp;openExplorer=true&amp;tab=storeys&amp;v=nav-4" loading="eager" allow="fullscreen"></iframe>
+              <iframe id="xeokitViewer" title="Interactive xeokit BIM Viewer" src="/static/xeokit/app/index.html?projectId=BMSCampus&amp;openExplorer=true&amp;tab=storeys&amp;v=scenario-context-4" loading="eager" allow="fullscreen"></iframe>
               <div class="studio-engine-badge" id="studioEngineBadge">XEOKIT / XKT BIM ENGINE</div>
-              <div class="studio-nav-hint" aria-hidden="true"><span>DRAG</span> ORBIT <i></i><span>RIGHT DRAG</span> PAN <i></i><span>WHEEL</span> ZOOM <i></i><span>DOUBLE CLICK</span> FOCUS</div>
             </div>
             <div class="studio-timeline">
               <div class="studio-stage-brief" id="studioStageBrief" aria-live="polite">
@@ -484,6 +481,6 @@
   </dialog>
 
   <div class="toast-region" id="toastRegion" aria-live="polite"></div>
-  <script type="module" src="/static/app.js?v=nav-4"></script>
+  <script type="module" src="/static/app.js?v=scenario-context-5"></script>
 </body>
 </html>

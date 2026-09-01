@@ -1,5 +1,5 @@
 import { api } from "./api.js";
-import { createTwinStudio } from "./twin-studio.js?v=nav-4";
+import { createTwinStudio } from "./twin-studio.js?v=scenario-context-5";
 
 const state = {
   summary: null,
@@ -22,6 +22,14 @@ const state = {
   judgeDemoPlan: null,
   lastGenieQuestion: "",
   priorityQuestion: "Give me a cross-domain brief of the campus right now.",
+  applicationContext: {
+    active_page: "campus_pulse",
+    intervention_type: null,
+    intervention_params: {},
+    affected_bim_objects: [],
+    selected_entity: null,
+    scenario_result: null,
+  },
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -67,56 +75,43 @@ const viewLabels = {
   explore: "Data atlas",
   feedback: "Outcome loop",
 };
-const viewOrder = Object.keys(viewLabels);
-const viewScrollPositions = new Map();
-let activeView = "overview";
 
 const twinStudio = createTwinStudio({
   root: "#view-studio",
   notify: toast,
   onAskGenie: question => askGenie(question),
   onOpenScenario: () => navigate("simulate"),
+  onSelectionChange: selection => {
+    state.applicationContext.selected_entity = selection;
+  },
 });
 
-function navigate(view, { historyMode = "push", restoreScroll = true } = {}) {
-  if (!Object.hasOwn(viewLabels, view)) return;
-  const changedView = activeView !== view;
-  if (changedView) viewScrollPositions.set(activeView, window.scrollY);
-  activeView = view;
+const contextPageNames = {
+  overview: "campus_pulse",
+  genie: "genie",
+  studio: "twin_studio",
+  simulate: "scenario_lab",
+  explore: "data_atlas",
+  feedback: "outcome_loop",
+};
+
+function navigate(view) {
   $$(".view").forEach(node => node.classList.toggle("is-visible", node.id === `view-${view}`));
-  $$(".nav-item").forEach(node => {
-    const selected = node.dataset.view === view;
-    node.classList.toggle("is-active", selected);
-    if (selected) node.setAttribute("aria-current", "page");
-    else node.removeAttribute("aria-current");
-  });
+  $$(".nav-item").forEach(node => node.classList.toggle("is-active", node.dataset.view === view));
   $("#viewCrumb").textContent = viewLabels[view] || view;
-  $("#workspaceSwitcher").value = view;
-  if (historyMode === "push" && location.hash !== `#${view}`) history.pushState({ view }, "", `#${view}`);
-  if (historyMode === "replace") history.replaceState({ view }, "", `#${view}`);
-  const targetScroll = restoreScroll
-    ? (changedView ? viewScrollPositions.get(view) || 0 : window.scrollY)
-    : 0;
-  window.requestAnimationFrame(() => window.scrollTo({ top: targetScroll, behavior: "auto" }));
+  history.replaceState(null, "", `#${view}`);
+  state.applicationContext.active_page = contextPageNames[view] || view;
+  window.scrollTo(0, 0);
 }
 
 function bindNavigation() {
-  $$("[data-view]").forEach((button, index) => {
-    button.addEventListener("click", () => navigate(button.dataset.view));
-    button.title = `${viewLabels[button.dataset.view]} (Alt+${index + 1})`;
-    button.setAttribute("aria-keyshortcuts", `Alt+${index + 1}`);
-  });
+  $$("[data-view]").forEach(button => button.addEventListener("click", () => navigate(button.dataset.view)));
   $$("[data-nav]").forEach(link => link.addEventListener("click", event => {
     event.preventDefault();
     navigate(link.dataset.nav);
   }));
-  $("#workspaceSwitcher").addEventListener("change", event => navigate(event.target.value));
   const initial = location.hash.replace("#", "");
-  navigate(Object.hasOwn(viewLabels, initial) ? initial : "overview", { historyMode: "replace", restoreScroll: false });
-  window.addEventListener("popstate", () => {
-    const view = location.hash.replace("#", "");
-    if (Object.hasOwn(viewLabels, view)) navigate(view, { historyMode: "none" });
-  });
+  if (Object.hasOwn(viewLabels, initial)) navigate(initial);
 }
 
 function renderSource() {
@@ -402,6 +397,85 @@ function uniqueSections() {
   return [...new Map(state.schedule.map(session => [session.section_id, session])).values()];
 }
 
+function bimImpactForRoom(roomId, role) {
+  const space = state.spatial.spaces.find(item => item.room_id === roomId);
+  if (!space) return null;
+  return {
+    room_id: roomId,
+    bim_space_id: space.id,
+    render_object_id: space.render_object_id,
+    source_model_id: space.source_model_id,
+    role,
+  };
+}
+
+function impactsForActions(actions) {
+  const impacts = [];
+  const add = (roomId, role) => {
+    const impact = roomId ? bimImpactForRoom(roomId, role) : null;
+    if (impact && !impacts.some(item => item.room_id === impact.room_id && item.role === impact.role)) impacts.push(impact);
+  };
+  for (const action of actions) {
+    const params = action.params || {};
+    const sectionRooms = [...new Set(state.schedule
+      .filter(session => session.section_id === params.section_id)
+      .map(session => session.room_id))];
+    if (action.type === "close_room") {
+      add(params.room_id, "source");
+    } else if (action.type === "relocate_section" || action.type === "reschedule_section") {
+      sectionRooms.forEach(roomId => add(roomId, "source"));
+      add(params.target_room_id || sectionRooms[0], "destination");
+    } else if (action.type === "change_intake") {
+      sectionRooms.forEach(roomId => add(roomId, "affected"));
+    }
+  }
+  return impacts;
+}
+
+function setScenarioApplicationContext(actions, objective, scenarioResult = null) {
+  const primary = actions.length === 1 ? actions[0] : null;
+  const params = primary?.params || { action_count: actions.length };
+  const sourceRooms = primary?.params?.section_id
+    ? [...new Set(state.schedule.filter(session => session.section_id === primary.params.section_id).map(session => session.room_id))]
+    : [];
+  const configuredImpacts = impactsForActions(actions);
+  const resultContext = scenarioResult ? {
+    scenario_id: scenarioResult.scenario_id,
+    name: scenarioResult.name,
+    objective: scenarioResult.objective,
+    verdict: scenarioResult.verdict,
+    score: scenarioResult.score,
+    deltas: (scenarioResult.deltas || []).slice(0, 8),
+    cascade_effects: (scenarioResult.cascade_effects || []).slice(0, 12),
+    affected_bim_objects: (scenarioResult.affected_bim_objects || []).slice(0, 24),
+  } : null;
+  state.applicationContext = {
+    active_page: state.applicationContext.active_page,
+    intervention_type: primary?.type || null,
+    section_id: primary?.params?.section_id || null,
+    source_room_id: primary?.type === "close_room" ? primary.params.room_id : (sourceRooms[0] || null),
+    source_room_ids: primary?.type === "close_room" ? [primary.params.room_id] : sourceRooms,
+    target_room_id: primary?.params?.target_room_id || null,
+    objective: objective || null,
+    intervention_params: params,
+    affected_bim_objects: scenarioResult?.affected_bim_objects?.length
+      ? scenarioResult.affected_bim_objects.slice(0, 24)
+      : configuredImpacts,
+    selected_entity: state.applicationContext.selected_entity,
+    scenario_result: resultContext,
+  };
+  twinStudio.setScenarioContext(state.applicationContext);
+}
+
+function syncScenarioApplicationContext() {
+  if (!state.summary || !$("#actionType")) return;
+  setScenarioApplicationContext([buildAction()], $("#scenarioObjective").value);
+}
+
+function genieContextSnapshot() {
+  return JSON.parse(JSON.stringify(state.applicationContext));
+}
+
 function renderActionFields() {
   const type = $("#actionType").value;
   const node = $("#actionFields");
@@ -416,6 +490,7 @@ function renderActionFields() {
   } else {
     node.innerHTML = `<label class="field"><span>Route</span><select id="paramRoute">${optionList(state.summary?.route_pressure || [], route => route.route_id, route => `${route.route_id} / ${route.name}`)}</select></label><label class="field"><span>Active buses</span><input id="paramBuses" type="number" min="1" max="20" value="4" /></label><label class="field"><span>Headway minutes</span><input id="paramHeadway" type="number" min="5" max="90" value="18" /></label>`;
   }
+  syncScenarioApplicationContext();
 }
 
 function buildAction() {
@@ -671,6 +746,7 @@ function applyPreset(preset, shouldNavigate = true) {
     $("#scenarioObjective").value = "energy";
   }
 
+  syncScenarioApplicationContext();
   if (shouldNavigate) navigate("simulate");
   toast("Scenario preset loaded. Review the intervention before running it.");
 }
@@ -682,8 +758,9 @@ function deltaClass(delta) {
   return "neutral";
 }
 
-function renderScenario(result) {
+function renderScenario(result, actions) {
   state.lastScenario = result;
+  setScenarioApplicationContext(actions, result.objective, result);
   const maxBand = Math.max(...result.confidence.map(item => item.p90), 1);
   const meta = state.lastScenarioMeta || { kind: "single", actionCount: result.action_log.length, samples: 220, manifest: [] };
   const compound = meta.kind === "compound";
@@ -908,6 +985,7 @@ function showDecisionBridge(question) {
 async function askGenie(question) {
   const cleanQuestion = withoutEmoji(question).trim();
   if (!cleanQuestion) return;
+  const applicationContext = genieContextSnapshot();
   navigate("genie");
   state.lastGenieQuestion = cleanQuestion;
   addMessage("user", cleanQuestion);
@@ -917,7 +995,11 @@ async function askGenie(question) {
   const working = addMessage("assistant", "Running a grounded query against the active CampusTwin views.", { mode: "genie" });
   working.classList.add("working-message");
   try {
-    const answer = await api.genie({ question: cleanQuestion, conversation_id: state.genieConversationId });
+    const answer = await api.genie({
+      question: cleanQuestion,
+      conversation_id: state.genieConversationId,
+      context: applicationContext,
+    });
     working.remove();
     if (answer.conversation_id) {
       state.genieConversationId = answer.conversation_id;
@@ -947,9 +1029,15 @@ async function runJudgeDemo() {
   }
   setLoading(button, true);
   try {
+    setScenarioApplicationContext(plan.actions, plan.objective);
+    const applicationContext = genieContextSnapshot();
     navigate("genie");
     addMessage("user", plan.question);
-    const genieAnswer = await api.genie({ question: plan.question, conversation_id: state.genieConversationId });
+    const genieAnswer = await api.genie({
+      question: plan.question,
+      conversation_id: state.genieConversationId,
+      context: applicationContext,
+    });
     if (genieAnswer.conversation_id) {
       state.genieConversationId = genieAnswer.conversation_id;
       $("#conversationIdLabel").textContent = `CONVERSATION ${genieAnswer.conversation_id.slice(0, 12).toUpperCase()}`;
@@ -964,7 +1052,7 @@ async function runJudgeDemo() {
       uncertainty_samples: plan.uncertainty_samples,
       actions: plan.actions,
     });
-    renderScenario(result);
+    renderScenario(result, plan.actions);
     await refreshOperationalMemory();
     $("#simulationOutput").scrollIntoView({ block: "start" });
     toast(`Judge demo complete. Verdict: ${result.verdict}. Score: ${result.score}.`);
@@ -1036,6 +1124,7 @@ async function loadAll() {
       bimStoreys: state.spatial.storeys,
       bimSpaces: state.spatial.spaces,
     });
+    syncScenarioApplicationContext();
     const databricks = summary.source.startsWith("databricks");
     $("#genieMode").textContent = databricks ? "Databricks Genie" : "Local constrained analyst";
     $("#genieModeNote").textContent = databricks
@@ -1080,6 +1169,9 @@ function bindExplore() {
 
 function bindSimulation() {
   $("#actionType").addEventListener("change", renderActionFields);
+  $("#actionFields").addEventListener("input", syncScenarioApplicationContext);
+  $("#actionFields").addEventListener("change", syncScenarioApplicationContext);
+  $("#scenarioObjective").addEventListener("change", syncScenarioApplicationContext);
   $$("[data-preset]").forEach(button => button.addEventListener("click", () => applyPreset(button.dataset.preset)));
   $("#runFlagshipSimulation").addEventListener("click", async () => {
     const button = $("#runFlagshipSimulation");
@@ -1092,6 +1184,7 @@ function bindSimulation() {
     $(".flagship-scenario").classList.add("is-selected");
     $$("[data-preset]").forEach(item => item.classList.remove("is-selected"));
     state.lastScenarioMeta = { kind: "compound", actionCount: plan.actions.length, samples: plan.uncertainty_samples, manifest: plan.manifest };
+    setScenarioApplicationContext(plan.actions, plan.objective);
     try {
       const result = await api.simulate({
         name: plan.name,
@@ -1100,7 +1193,7 @@ function bindSimulation() {
         uncertainty_samples: plan.uncertainty_samples,
         actions: plan.actions,
       });
-      renderScenario(result);
+      renderScenario(result, plan.actions);
       await refreshOperationalMemory();
       $("#simulationOutput").scrollIntoView({ block: "start" });
       toast(`Compound simulation complete. Verdict: ${result.verdict}. Score: ${result.score}.`);
@@ -1115,14 +1208,16 @@ function bindSimulation() {
     setLoading(button, true);
     $(".flagship-scenario").classList.remove("is-selected");
     state.lastScenarioMeta = { kind: "single", actionCount: 1, samples: 220, manifest: [] };
+    const actions = [buildAction()];
+    setScenarioApplicationContext(actions, $("#scenarioObjective").value);
     try {
       const result = await api.simulate({
         name: $("#scenarioName").value || "Operational what-if",
         objective: $("#scenarioObjective").value,
         persist: state.summary?.source.startsWith("databricks") || false,
-        actions: [buildAction()],
+        actions,
       });
-      renderScenario(result);
+      renderScenario(result, actions);
       await refreshOperationalMemory();
       toast(`Scenario complete. Verdict: ${result.verdict}. Score: ${result.score}.`);
     } catch (error) {
@@ -1144,6 +1239,12 @@ function bindGenie() {
   $("#genieForm").addEventListener("submit", event => {
     event.preventDefault();
     askGenie($("#genieQuestion").value);
+  });
+  $("#genieQuestion").addEventListener("keydown", event => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      $("#genieForm").requestSubmit();
+    }
   });
   $("#openScenarioFromGenie").addEventListener("click", () => applyPreset($("#decisionBridge").dataset.preset || "capacity"));
 }
@@ -1206,11 +1307,6 @@ bindFeedback();
 bindSetup();
 $("#refreshButton").addEventListener("click", loadAll);
 window.addEventListener("keydown", event => {
-  const isEditing = ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName);
-  if ((event.key === "r" || event.key === "R") && !isEditing) loadAll();
-  if (event.altKey && !isEditing && /^[1-6]$/.test(event.key)) {
-    event.preventDefault();
-    navigate(viewOrder[Number(event.key) - 1]);
-  }
+  if ((event.key === "r" || event.key === "R") && !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) loadAll();
 });
 loadAll();

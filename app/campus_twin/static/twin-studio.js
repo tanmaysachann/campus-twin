@@ -29,9 +29,9 @@ function stageAction(plan, type) {
   return plan?.actions?.find(action => action.type === type) || null;
 }
 
-export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
+export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario, onSelectionChange }) {
   const host = typeof root === "string" ? document.querySelector(root) : root;
-  if (!host) return { setData() {}, render() {}, focusRoom() {}, focusFloor() {} };
+  if (!host) return { setData() {}, setScenarioContext() {}, render() {}, focusRoom() {}, focusFloor() {} };
 
   const elements = {
     building: host.querySelector("#studioBuilding"),
@@ -81,6 +81,7 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
   let viewerReady = false;
   let xeokitStats = { objectCount: 0, storeyCount: 0, modelCount: 0 };
   let playback = null;
+  let scenarioContext = { affected_bim_objects: [], scenario_result: null };
 
   function buildingById(id) {
     return data.buildings.find(building => building.id === id) || null;
@@ -96,6 +97,68 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
 
   function spaceForRoom(roomId) {
     return data.bimSpaces.find(space => space.room_id === roomId) || null;
+  }
+
+  function activeScenarioImpacts() {
+    const resultImpacts = scenarioContext?.scenario_result?.affected_bim_objects || [];
+    return resultImpacts.length ? resultImpacts : (scenarioContext?.affected_bim_objects || []);
+  }
+
+  function scenarioHighlights() {
+    return activeScenarioImpacts().filter(impact => {
+      const room = roomById(impact.room_id);
+      if (!room || room.building_id !== view.buildingId) return false;
+      if (view.focusKind === "floor" || view.focusKind === "room") {
+        return Number(room.floor) === Number(view.floor);
+      }
+      return true;
+    }).map(impact => ({
+      roomId: impact.room_id,
+      role: impact.role,
+      rootObjectIds: [impact.bim_space_id].filter(Boolean),
+      objectIds: [impact.bim_space_id, impact.render_object_id].filter(Boolean),
+    }));
+  }
+
+  function selectedEntityForObject(objectId) {
+    const space = data.bimSpaces.find(item => item.id === objectId || item.render_object_id === objectId);
+    if (!space?.room_id) {
+      return { entity_type: "bim_object", entity_id: objectId, render_object_id: objectId };
+    }
+    const room = roomById(space.room_id);
+    return {
+      entity_type: "room",
+      entity_id: room?.id || space.room_id,
+      name: room?.name || space.name,
+      room_id: space.room_id,
+      building_id: room?.building_id || null,
+      floor: room ? Number(room.floor) : Number(space.floor_index),
+      bim_space_id: space.id,
+      render_object_id: space.render_object_id,
+    };
+  }
+
+  function publishViewSelection(kind = view.focusKind) {
+    if (kind === "room" && view.selectedRoomId) {
+      const space = spaceForRoom(view.selectedRoomId);
+      onSelectionChange?.(selectedEntityForObject(space?.render_object_id || space?.id || view.selectedRoomId));
+      return;
+    }
+    if (kind === "floor") {
+      const building = buildingById(view.buildingId);
+      onSelectionChange?.({
+        entity_type: "floor",
+        entity_id: `${view.buildingId}:floor:${view.floor}`,
+        name: `${building?.name || view.buildingId} floor ${view.floor}`,
+        building_id: view.buildingId,
+        floor: view.floor,
+      });
+      return;
+    }
+    const building = buildingById(view.buildingId);
+    if (building) {
+      onSelectionChange?.({ entity_type: "building", entity_id: building.id, name: building.name, building_id: building.id });
+    }
   }
 
   function selectionForView() {
@@ -160,7 +223,19 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
   }
 
   function scenarioFlags(room) {
-    const flags = { demand: false, closed: false, released: false, receiving: false, rescheduled: false, descriptions: [] };
+    const flags = { demand: false, source: false, closed: false, released: false, receiving: false, rescheduled: false, descriptions: [] };
+    for (const impact of activeScenarioImpacts().filter(item => item.room_id === room.id)) {
+      if (impact.role === "source") {
+        flags.source = true;
+        flags.descriptions.push("This is a source space in the active Scenario Lab intervention.");
+      } else if (impact.role === "destination") {
+        flags.receiving = true;
+        flags.descriptions.push("This is a destination space in the active Scenario Lab intervention.");
+      } else {
+        flags.demand = true;
+        flags.descriptions.push("This BIM space is affected by the active Scenario Lab intervention.");
+      }
+    }
     if (!data.plan || view.stage === 0) return flags;
     const demand = stageAction(data.plan, "change_intake");
     if (view.stage >= 1 && demand && roomSessions(room.id).some(session => session.section_id === demand.params.section_id)) {
@@ -190,6 +265,7 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
   function roomState(room, flags) {
     if (flags.closed) return "OUTAGE";
     if (flags.receiving || flags.rescheduled) return "RECEIVING";
+    if (flags.source) return "SOURCE";
     if (flags.demand) return "DEMAND RISK";
     if (roomRiskCount(room) > 0) return "CAPACITY RISK";
     if (slotSessions(room.id).length) return "SCHEDULED";
@@ -198,6 +274,17 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
 
   function stageBriefing() {
     const manifest = data.plan?.manifest || [];
+    const impacts = activeScenarioImpacts();
+    if (impacts.length) {
+      const hasResult = Boolean(scenarioContext?.scenario_result);
+      return {
+        kicker: hasResult ? "SCENARIO RESULT / SPATIAL IMPACT" : "SCENARIO LAB / ACTIVE CONTEXT",
+        title: hasResult ? "Affected BIM spaces from the latest result" : "Source and destination BIM spaces",
+        detail: hasResult
+          ? `${impacts.length} governed BIM/XKT space mappings are linked to the generated counterfactual.`
+          : `${impacts.length} governed BIM/XKT space mappings update as the intervention changes.`,
+      };
+    }
     if (view.stage === 0) return {
       kicker: "00 / GOVERNED BASELINE",
       title: "Current BIM baseline",
@@ -243,6 +330,7 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
         hour: view.hour,
         focus,
         selection: selectionForView(),
+        scenarioHighlights: scenarioHighlights(),
       },
     });
   }
@@ -300,7 +388,7 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
       schedule: [[PALETTE.accent, "Timetable-linked openings"], [PALETTE.used, "Native BIM context"]],
       capacity: [[PALETTE.normal, "Capacity-linked spaces"], [PALETTE.used, "Native BIM context"]],
       energy: [["#3aabe8", "Building-services systems"], [PALETTE.used, "X-rayed architecture"]],
-      scenario: [[PALETTE.critical, "Outage"], [PALETTE.watch, "Demand pressure"], [PALETTE.normal, "Receiving response"], [PALETTE.signal, "Services response"]],
+      scenario: [[PALETTE.accent, "Scenario source"], [PALETTE.normal, "Scenario destination"], [PALETTE.watch, "Other affected space"], [PALETTE.signal, "Services response"]],
     }[view.layer];
     if (view.focusKind === "building") {
       legends = [[PALETTE.signal, "Selected building block"], [PALETTE.used, "Full-model context"]];
@@ -311,14 +399,32 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
   function renderStage() {
     const briefing = stageBriefing();
     const room = roomById(view.selectedRoomId) || visibleRooms()[0];
+    const impacts = activeScenarioImpacts();
     elements.stageKicker.textContent = briefing.kicker;
     elements.stageTitle.textContent = briefing.title;
     elements.stageDetail.textContent = briefing.detail;
     elements.stageLabel.textContent = STAGES[view.stage];
     elements.stage.value = String(view.stage);
-    elements.stageTargets.innerHTML = room
-      ? `<button type="button" class="is-active" data-stage-target="room">BIM STOREY / ${esc(room.name)} / ${esc(room.id)}</button>`
+    const targets = impacts.length
+      ? impacts.map((impact, index) => {
+        const targetRoom = roomById(impact.room_id);
+        const following = view.focusKind === "room" && view.selectedRoomId === impact.room_id;
+        return `<button type="button" class="${following ? "is-active" : ""}" data-stage-target="${index}" aria-pressed="${following}">${esc(impact.role.toUpperCase())} / ${esc(targetRoom?.name || impact.room_id)} / ${esc(impact.room_id)}</button>`;
+      }).join("")
+      : room
+        ? `<button type="button" class="${view.focusKind === "room" ? "is-active" : ""}" data-stage-target="room" aria-pressed="${view.focusKind === "room"}">BIM SPACE / ${esc(room.name)} / ${esc(room.id)}</button>`
+        : "";
+    const clearFollow = view.focusKind
+      ? `<button type="button" class="clear-follow" data-clear-follow>CLEAR FOLLOW</button>`
       : "";
+    elements.stageTargets.innerHTML = `${targets}${clearFollow}`;
+  }
+
+  function clearFollowing() {
+    view.focusKind = null;
+    onSelectionChange?.(null);
+    render();
+    sendToViewer({ type: "campus-twin-xeokit-fit" });
   }
 
   function render() {
@@ -367,6 +473,7 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
       updateFloors();
       render();
       sendViewerState({ focus: true });
+      publishViewSelection("building");
     });
     elements.floor.addEventListener("change", () => {
       view.floor = Number(elements.floor.value);
@@ -374,6 +481,7 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
       view.focusKind = "floor";
       render();
       sendViewerState({ focus: true });
+      publishViewSelection("floor");
     });
     elements.day.addEventListener("change", () => { view.day = elements.day.value; render(); });
     elements.hour.addEventListener("input", () => { view.hour = Number(elements.hour.value); render(); });
@@ -390,11 +498,29 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
       sendToViewer({ type: "campus-twin-xeokit-tab", tab: button.dataset.xeokitTab });
     }));
     host.querySelector("[data-xeokit-action='fit']")?.addEventListener("click", () => sendToViewer({ type: "campus-twin-xeokit-fit" }));
-    host.querySelectorAll("[data-xeokit-view]").forEach(button => button.addEventListener("click", () => {
-      sendToViewer({ type: "campus-twin-xeokit-view", view: button.dataset.xeokitView });
-    }));
     elements.stageTargets.addEventListener("click", event => {
-      if (event.target.closest("[data-stage-target]")) sendViewerState({ focus: true });
+      if (event.target.closest("[data-clear-follow]")) {
+        clearFollowing();
+        return;
+      }
+      const target = event.target.closest("[data-stage-target]");
+      if (!target) return;
+      const impact = activeScenarioImpacts()[Number(target.dataset.stageTarget)];
+      if (impact) {
+        const room = roomById(impact.room_id);
+        if (room) {
+          view.buildingId = room.building_id;
+          view.floor = Number(room.floor);
+          view.selectedRoomId = room.id;
+          view.focusKind = "room";
+          elements.building.value = view.buildingId;
+          updateFloors(view.floor);
+          elements.floor.value = String(view.floor);
+          render();
+          publishViewSelection("room");
+        }
+      }
+      sendViewerState({ focus: true });
     });
     elements.askGenie.addEventListener("click", () => {
       const building = buildingById(view.buildingId);
@@ -420,6 +546,23 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
         elements.loading.innerHTML = `<strong>XEOKIT MODEL ERROR</strong><span>${esc(event.data.message || "The BIM model could not be loaded.")}</span>`;
         elements.roomState.textContent = "ERROR";
       }
+      if (event.data?.type === "campus-twin-xeokit-selection" && event.data.objectId) {
+        const selection = selectedEntityForObject(event.data.objectId);
+        if (selection.entity_type === "room") {
+          const room = roomById(selection.room_id);
+          if (room) {
+            view.buildingId = room.building_id;
+            view.floor = Number(room.floor);
+            view.selectedRoomId = room.id;
+            view.focusKind = "room";
+            elements.building.value = view.buildingId;
+            updateFloors(view.floor);
+            elements.floor.value = String(view.floor);
+            renderInspector();
+          }
+        }
+        onSelectionChange?.(selection);
+      }
     });
   }
 
@@ -439,6 +582,26 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
       if (!previousBuilding && view.buildingId) view.focusKind = "building";
       render();
     },
+    setScenarioContext(nextContext) {
+      scenarioContext = nextContext || { affected_bim_objects: [], scenario_result: null };
+      const firstImpact = activeScenarioImpacts()[0];
+      const room = firstImpact ? roomById(firstImpact.room_id) : null;
+      if (room) {
+        view.buildingId = room.building_id;
+        view.floor = Number(room.floor);
+        view.selectedRoomId = room.id;
+        view.focusKind = "room";
+        elements.building.value = view.buildingId;
+        updateFloors(view.floor);
+        elements.floor.value = String(view.floor);
+      }
+      view.layer = "scenario";
+      host.querySelectorAll("[data-studio-layer]").forEach(button => {
+        button.classList.toggle("is-active", button.dataset.studioLayer === "scenario");
+      });
+      render();
+      sendViewerState({ focus: false });
+    },
     focusRoom(roomId) {
       const room = roomById(roomId);
       if (!room) return false;
@@ -451,6 +614,7 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
       elements.floor.value = String(view.floor);
       render();
       sendViewerState({ focus: true });
+      publishViewSelection("room");
       return true;
     },
     focusFloor(buildingId, floor) {
@@ -461,6 +625,7 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
       updateFloors(view.floor);
       render();
       sendViewerState({ focus: true });
+      publishViewSelection("floor");
     },
     render,
   };
