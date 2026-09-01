@@ -8,7 +8,6 @@
   <meta name="description" content="A Genie-powered campus decision twin for asking questions, testing interventions, and learning from outcomes." />
   <title>CampusTwin | Ask. Simulate. Decide.</title>
   <link rel="icon" href="/static/favicon.svg" />
-  <link rel="stylesheet" href="/static/vendor/cesium/Widgets/widgets.css" />
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
@@ -236,10 +235,10 @@
       <section class="view" id="view-studio" aria-labelledby="studio-title">
         <div class="view-heading feature-heading">
           <div>
-            <h1 id="studio-title">See the campus change<br /><span class="title-accent">before anyone moves.</span></h1>
-            <p class="lede">Move from a campus-scale geospatial model to a room-level floor twin. Inspect scheduled activity and step through the compound resilience scenario before anyone moves.</p>
+            <h1 id="studio-title">Inspect the campus as<br /><span class="title-accent">a true BIM workspace.</span></h1>
+            <p class="lede">The official xeokit BIM Viewer now owns the entire 3D experience. Explore model hierarchy, storeys, properties, sections, measurements, X-ray modes, and CampusTwin scenario overlays in one working surface.</p>
           </div>
-          <div class="feature-proof"><span>GEOMETRY CONTRACT</span><strong>INVENTORY-DERIVED MODEL</strong><p>Room semantics are governed. Shapes are generated for simulation and are not surveyed CAD geometry.</p></div>
+          <div class="feature-proof"><span>VIEWER ENGINE</span><strong>XEOKIT BIM VIEWER 2.7.1</strong><p>Official AGPL viewer source and a detailed demonstration XKT model; geometry remains approximate and is not an actual BMSCE survey.</p></div>
         </div>
 
         <div class="studio-commandbar panel" aria-label="Spatial twin controls">
@@ -259,32 +258,23 @@
         <div class="studio-layout">
           <article class="panel studio-viewport-panel">
             <header class="panel-head studio-viewport-head">
-              <div><h2 id="studioModelTitle">Spatial model</h2><span class="panel-context" id="studioModelContext">LOADING ROOM INVENTORY</span></div>
+              <div><h2 id="studioModelTitle">BMSCE approximate BIM demo</h2><span class="panel-context" id="studioModelContext">LOADING XEOKIT MODEL DATABASE</span></div>
               <div class="studio-head-tools">
-                <div class="studio-engine-tabs" role="tablist" aria-label="Spatial model scale">
-                  <button class="is-active" type="button" data-studio-mode="floor" role="tab" aria-selected="true">THREE.JS / FLOOR</button>
-                  <button type="button" data-studio-mode="campus" role="tab" aria-selected="false">CESIUM / CAMPUS</button>
-                </div>
                 <div class="studio-view-controls" aria-label="Model view controls">
-                  <button type="button" data-studio-control="rotate-left">ROTATE LEFT</button>
-                  <button type="button" data-studio-control="rotate-right">ROTATE RIGHT</button>
-                  <button type="button" data-studio-control="fit">FIT VIEW</button>
-                  <label><span>ZOOM</span><input id="studioZoom" type="range" min="65" max="155" value="100" /></label>
+                  <button type="button" data-xeokit-action="fit">FIT MODEL</button>
+                  <button type="button" data-xeokit-tab="storeys">STOREYS</button>
+                  <button type="button" data-xeokit-tab="models">MODELS</button>
+                  <button type="button" data-xeokit-tab="objects">OBJECTS</button>
                 </div>
               </div>
             </header>
-            <div class="studio-canvas-wrap">
-              <div class="studio-engine-viewport is-active" id="studioFloorViewport">
-                <div id="studioCanvas" role="img" aria-label="Interactive Three.js campus floor model" tabindex="0"></div>
+            <div class="studio-canvas-wrap xeokit-canvas-wrap">
+              <div class="xeokit-loading" id="xeokitLoading" role="status">
+                <strong>LOADING XEOKIT BIM DATABASE</strong>
+                <span>Architecture, building services, and structural XKT models</span>
               </div>
-              <div class="studio-engine-viewport" id="studioCampusViewport" aria-hidden="true">
-                <div id="studioCampus" role="img" aria-label="Interactive CesiumJS campus-scale model"></div>
-              </div>
-              <div class="studio-engine-badge" id="studioEngineBadge">THREE.JS / ROOM-SCALE WEBGL</div>
-              <div class="studio-canvas-readout">
-                <span id="studioControlHint">LEFT DRAG TO ORBIT / RIGHT DRAG TO PAN</span><i></i><span>WHEEL TO ZOOM</span>
-              </div>
-              <div class="studio-axis" aria-hidden="true"><span class="axis-z">Z</span><span class="axis-y">Y</span><span class="axis-x">X</span></div>
+              <iframe id="xeokitViewer" title="Interactive xeokit BIM Viewer" src="/static/xeokit/app/index.html?projectId=BMSCampus&amp;openExplorer=true&amp;tab=storeys" loading="eager" allow="fullscreen"></iframe>
+              <div class="studio-engine-badge" id="studioEngineBadge">XEOKIT / XKT BIM ENGINE</div>
             </div>
             <div class="studio-timeline">
               <div class="studio-stage-brief" id="studioStageBrief" aria-live="polite">
@@ -306,7 +296,7 @@
 
           <aside class="studio-side">
             <section class="panel studio-inspector">
-              <header class="panel-head"><div><h2>Room inspector</h2><span class="panel-context">SELECTED MODEL ELEMENT</span></div><span class="mono-tag" id="studioRoomState">READY</span></header>
+              <header class="panel-head"><div><h2>Campus data inspector</h2><span class="panel-context">BIM VIEW + GOVERNED DATA</span></div><span class="mono-tag" id="studioRoomState">LOADING</span></header>
               <div class="studio-room-title"><span id="studioRoomCode">NO ROOM</span><h3 id="studioRoomName">Select a room in the model</h3><p id="studioRoomType">Room facts will appear here.</p></div>
               <div class="studio-room-facts" id="studioRoomFacts"></div>
               <div class="studio-inspector-section"><span>SCHEDULE AT FILTER</span><div id="studioRoomSchedule">No room selected.</div></div>
@@ -317,7 +307,7 @@
               </div>
             </section>
             <section class="panel studio-floor-readout">
-              <header><span>FLOOR READOUT</span><strong id="studioFloorState">BASELINE</strong></header>
+              <header><span>XEOKIT MODEL READOUT</span><strong id="studioFloorState">LOADING</strong></header>
               <div id="studioFloorFacts"></div>
               <div class="studio-legend" id="studioLegend"></div>
             </section>
@@ -325,10 +315,10 @@
         </div>
 
         <div class="studio-contract" aria-label="Spatial model contract">
-          <div><span>RENDERERS</span><strong>Three.js floor twin and CesiumJS campus context</strong></div>
-          <div><span>SEMANTICS</span><strong>Governed room, schedule, energy, topology, and event records</strong></div>
-          <div><span>GEOMETRY</span><strong>Deterministic model from inventory and topology, not surveyed CAD or GIS</strong></div>
-          <div><span>NEXT IMPORT</span><strong>glTF 2.0 mapped to room IDs, then IFC conversion when real BIM files arrive</strong></div>
+          <div><span>VIEWER</span><strong>Official xeokit-bim-viewer repository, replacing Three.js and CesiumJS</strong></div>
+          <div><span>BIM TOOLS</span><strong>Object tree, storeys, properties, X-ray, sections, measurements, and viewpoints</strong></div>
+          <div><span>MODEL</span><strong>Detailed official demonstration XKT relabeled as an approximate BMSCE demo</strong></div>
+          <div><span>DATA BRIDGE</span><strong>CampusTwin schedule, capacity, energy, and scenario states drive xeokit object styling</strong></div>
         </div>
       </section>
 
@@ -491,8 +481,6 @@
   </dialog>
 
   <div class="toast-region" id="toastRegion" aria-live="polite"></div>
-  <script>window.CESIUM_BASE_URL = "/static/vendor/cesium/";</script>
-  <script src="/static/vendor/cesium/Cesium.js"></script>
-  <script type="module" src="/static/app.js?v=judge-demo-1"></script>
+  <script type="module" src="/static/app.js?v=xeokit-1"></script>
 </body>
 </html>

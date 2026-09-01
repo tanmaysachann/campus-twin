@@ -24,6 +24,39 @@ def test_deployment_payload_is_self_contained_and_in_sync():
     assert "valueFrom: sql-warehouse" in app_yaml
 
 
+def test_xeokit_is_the_only_bundled_3d_viewer():
+    root = Path(__file__).resolve().parents[1]
+    static = root / "app" / "campus_twin" / "static"
+    xeokit = static / "xeokit"
+
+    assert (xeokit / "dist" / "xeokit-bim-viewer.es.js").is_file()
+    assert (xeokit / "app" / "index.html").is_file()
+    assert (xeokit / "LICENSE").is_file()
+    assert (xeokit / "SOURCE_INFO.md").is_file()
+    assert not (static / "vendor" / "three").exists()
+    assert not (static / "vendor" / "cesium").exists()
+
+    project = json.loads(
+        (xeokit / "app" / "data" / "projects" / "BMSCampus" / "index.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    model_ids = {model["id"] for model in project["models"]}
+    assert model_ids == {
+        "AR-Demo_Sample_Single_Building_01",
+        "ME-Demo_Sample_Single_Building_01",
+        "ST-Demo_Sample_Single_Building_01",
+    }
+    assert set(project["viewerContent"]["modelsLoaded"]) == model_ids
+
+    index_html = (static / "index.html").read_text(encoding="utf-8")
+    twin_adapter = (static / "twin-studio.js").read_text(encoding="utf-8")
+    assert "/static/xeokit/app/index.html" in index_html
+    assert "vendor/three" not in index_html
+    assert "vendor/cesium" not in index_html
+    assert "campus-twin-xeokit-state" in twin_adapter
+
+
 def test_genie_design_is_grounded_in_gold_views():
     root = Path(__file__).resolve().parents[1]
     serialized = json.loads((root / "genie" / "campus_twin_space.json").read_text(encoding="utf-8"))

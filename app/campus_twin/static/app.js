@@ -1,5 +1,5 @@
 import { api } from "./api.js";
-import { createTwinStudio } from "./twin-studio.js?v=spatial-3";
+import { createTwinStudio } from "./twin-studio.js?v=xeokit-1";
 
 const state = {
   summary: null,

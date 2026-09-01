@@ -1,0 +1,28 @@
+{
+  "id": "BMSCampus",
+  "name": "BMSCE Approximate BIM Demo",
+  "created": "2026-09-01T00:00:00Z",
+  "models": [
+    {"id": "AR-Demo_Sample_Single_Building_01", "name": "Academic Architecture"},
+    {"id": "ME-Demo_Sample_Single_Building_01", "name": "Building Services"},
+    {"id": "ST-Demo_Sample_Single_Building_01", "name": "Structural System"}
+  ],
+  "viewerConfigs": {
+    "backgroundColor": [0.055, 0.082, 0.074],
+    "edgesEnabled": true,
+    "pbrEnabled": true,
+    "saoEnabled": true,
+    "showSpaces": true,
+    "selectedGlowThrough": true,
+    "highlightGlowThrough": true,
+    "dtxEnabled": true
+  },
+  "viewerContent": {
+    "modelsLoaded": [
+      "AR-Demo_Sample_Single_Building_01",
+      "ME-Demo_Sample_Single_Building_01",
+      "ST-Demo_Sample_Single_Building_01"
+    ]
+  },
+  "viewerState": {"tabOpen": "storeys", "expandStoreysTree": 2}
+}

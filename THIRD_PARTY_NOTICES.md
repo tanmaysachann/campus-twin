@@ -1,21 +1,18 @@
 # Third-party notices
 
-CampusTwin vendors the following browser runtimes so the Databricks App does not depend on a public CDN during a demonstration.
+CampusTwin vendors the following browser runtime so the deployed application
+does not depend on a public CDN during a demonstration.
 
-## Three.js
+## xeokit-bim-viewer and xeokit SDK
 
-- Version: 0.185.1
-- License: MIT
-- Project: https://threejs.org/
-- Local license: `app/campus_twin/static/vendor/three/LICENSE.txt`
+- Viewer version: 2.7.1
+- Upstream commit: `a86a91a399d4725d77df34ad715f986534d08952`
+- License: GNU Affero General Public License v3
+- Project: https://github.com/xeokit/xeokit-bim-viewer
+- Local license: `app/campus_twin/static/xeokit/LICENSE`
+- Source record: `app/campus_twin/static/xeokit/SOURCE_INFO.md`
 
-The local `OrbitControls.js` import path was changed from the package alias to the bundled relative module path. Runtime behavior was not otherwise modified.
-
-## CesiumJS
-
-- Version: 1.144.0
-- License: Apache License 2.0
-- Project: https://cesium.com/platform/cesiumjs
-- Local license: `app/campus_twin/static/vendor/cesium/LICENSE.md`
-
-The Cesium credit display remains visible in the campus viewport.
+CampusTwin embeds the official xeokit BIM Viewer application, its xeokit SDK
+runtime, and the official Archicad demonstration XKT assets. The viewer entry
+page adds a same-origin state bridge for CampusTwin scenario styling and loads
+the bundled demonstration project automatically.

@@ -76,15 +76,15 @@ No gradients. No purple/cyan default AI palette. No glow. No warm cream/beige ae
 
 ## Spatial twin
 
-- Three.js owns the room and floor scale.
-- CesiumJS owns the campus and mobility scale.
+- The official xeokit BIM Viewer owns the 3D/BIM workspace at every scale.
+- CampusTwin may drive xeokit selection, X-ray, colorization, storey focus, and explorer tabs through the same-origin integration bridge.
 - Engine controls must look like technical workspace controls, not game controls.
 - Geometry must encode inventory, topology, or imported building data.
 - The interface must state when geometry is generated and not surveyed.
 - Room selection must expose governed facts and a direct path to Genie or Scenario Lab.
 - Color, height, markers, and paths must have a data meaning that appears in the legend or inspector.
 - The timeline uses five discrete scenario stages. It does not imply a continuous physical model.
-- Cesium credit text remains visible.
+- xeokit attribution and corresponding-source information remain available in the repository.
 - A future IFC, glTF, or navigation mesh import must preserve canonical building and room identifiers.
 
 ## Iconography and imagery

@@ -9,7 +9,7 @@ This repository is intentionally more than a dashboard. The design separates **f
 ## What is runnable now
 
 - A polished single-page CampusTwin application with no frontend build step.
-- A dual-scale spatial twin: Three.js room and floor simulation plus a CesiumJS campus operations field.
+- An embedded xeokit BIM Viewer workspace with official XKT architecture, building-services, and structural demo models plus CampusTwin scenario overlays.
 - FastAPI backend with typed contracts and OpenAPI docs.
 - Deterministic bundled campus dataset: 8 buildings, 58 rooms, 47 sections, 141 weekly sessions, 4 bus routes, 7 days of hourly building energy, events, and a walking graph.
 - Delta-backed Databricks repository over the SQL Statement Execution API.
@@ -302,4 +302,4 @@ python scripts/judge_demo_smoke.py
 
 ## License
 
-MIT. See [`LICENSE`](LICENSE).
+GNU Affero General Public License v3.0. See [`LICENSE`](LICENSE). The embedded xeokit BIM Viewer source provenance is recorded in [`app/campus_twin/static/xeokit/SOURCE_INFO.md`](app/campus_twin/static/xeokit/SOURCE_INFO.md).
