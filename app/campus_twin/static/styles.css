@@ -369,6 +369,8 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); padding: 1px 4px; m
 .studio-stage-targets button:hover, .studio-stage-targets button.is-active { border-color: var(--ink); background: var(--ink); color: #fff; }
 .studio-stage-targets button::before { content: "VIEW "; color: var(--accent-dark); }
 .studio-stage-targets button.is-active::before { content: "FOLLOWING "; color: var(--signal); }
+.studio-stage-targets button.clear-follow { border-color: var(--accent-dark); color: var(--accent-dark); }
+.studio-stage-targets button.clear-follow::before { content: ""; }
 .timeline-command { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 10px; }
 .timeline-command > div { text-align: right; }
 .timeline-command span, .timeline-command strong { display: block; }

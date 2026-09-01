@@ -405,14 +405,26 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario, onS
     elements.stageDetail.textContent = briefing.detail;
     elements.stageLabel.textContent = STAGES[view.stage];
     elements.stage.value = String(view.stage);
-    elements.stageTargets.innerHTML = impacts.length
+    const targets = impacts.length
       ? impacts.map((impact, index) => {
         const targetRoom = roomById(impact.room_id);
-        return `<button type="button" class="${impact.role === "destination" ? "is-active" : ""}" data-stage-target="${index}">${esc(impact.role.toUpperCase())} / ${esc(targetRoom?.name || impact.room_id)} / ${esc(impact.room_id)}</button>`;
+        const following = view.focusKind === "room" && view.selectedRoomId === impact.room_id;
+        return `<button type="button" class="${following ? "is-active" : ""}" data-stage-target="${index}" aria-pressed="${following}">${esc(impact.role.toUpperCase())} / ${esc(targetRoom?.name || impact.room_id)} / ${esc(impact.room_id)}</button>`;
       }).join("")
       : room
-        ? `<button type="button" class="is-active" data-stage-target="room">BIM STOREY / ${esc(room.name)} / ${esc(room.id)}</button>`
+        ? `<button type="button" class="${view.focusKind === "room" ? "is-active" : ""}" data-stage-target="room" aria-pressed="${view.focusKind === "room"}">BIM SPACE / ${esc(room.name)} / ${esc(room.id)}</button>`
         : "";
+    const clearFollow = view.focusKind
+      ? `<button type="button" class="clear-follow" data-clear-follow>CLEAR FOLLOW</button>`
+      : "";
+    elements.stageTargets.innerHTML = `${targets}${clearFollow}`;
+  }
+
+  function clearFollowing() {
+    view.focusKind = null;
+    onSelectionChange?.(null);
+    render();
+    sendToViewer({ type: "campus-twin-xeokit-fit" });
   }
 
   function render() {
@@ -487,6 +499,10 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario, onS
     }));
     host.querySelector("[data-xeokit-action='fit']")?.addEventListener("click", () => sendToViewer({ type: "campus-twin-xeokit-fit" }));
     elements.stageTargets.addEventListener("click", event => {
+      if (event.target.closest("[data-clear-follow]")) {
+        clearFollowing();
+        return;
+      }
       const target = event.target.closest("[data-stage-target]");
       if (!target) return;
       const impact = activeScenarioImpacts()[Number(target.dataset.stageTarget)];

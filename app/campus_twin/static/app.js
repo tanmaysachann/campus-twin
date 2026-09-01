@@ -1,5 +1,5 @@
 import { api } from "./api.js";
-import { createTwinStudio } from "./twin-studio.js?v=scenario-context-4";
+import { createTwinStudio } from "./twin-studio.js?v=scenario-context-5";
 
 const state = {
   summary: null,
