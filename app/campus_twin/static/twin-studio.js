@@ -124,6 +124,16 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
         };
       }
     }
+    if (view.focusKind === "building" && view.buildingId) {
+      const building = buildingById(view.buildingId);
+      return {
+        kind: "building",
+        label: building?.name || view.buildingId,
+        buildingId: view.buildingId,
+        buildingIndex: Math.max(0, data.buildings.findIndex(item => item.id === view.buildingId)),
+        buildingCount: data.buildings.length,
+      };
+    }
     return null;
   }
 
@@ -286,12 +296,15 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
       <div><span>GOVERNED ROOMS</span><strong>${rooms.length}</strong></div>
       <div><span>SCHEDULED NOW</span><strong>${occupied}</strong></div>
       <div><span>AFFECTED / RISKS</span><strong>${affected} / ${risks}</strong></div>`;
-    const legends = {
+    let legends = {
       schedule: [[PALETTE.accent, "Timetable-linked openings"], [PALETTE.used, "Native BIM context"]],
       capacity: [[PALETTE.normal, "Capacity-linked spaces"], [PALETTE.used, "Native BIM context"]],
       energy: [["#3aabe8", "Building-services systems"], [PALETTE.used, "X-rayed architecture"]],
       scenario: [[PALETTE.critical, "Outage"], [PALETTE.watch, "Demand pressure"], [PALETTE.normal, "Receiving response"], [PALETTE.signal, "Services response"]],
     }[view.layer];
+    if (view.focusKind === "building") {
+      legends = [[PALETTE.signal, "Selected building block"], [PALETTE.used, "Full-model context"]];
+    }
     elements.legend.innerHTML = legends.map(([color, label]) => `<span><i style="background:${color}"></i>${esc(label)}</span>`).join("");
   }
 
@@ -350,7 +363,7 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
   function bind() {
     elements.building.addEventListener("change", () => {
       view.buildingId = elements.building.value;
-      view.focusKind = "floor";
+      view.focusKind = "building";
       updateFloors();
       render();
       sendViewerState({ focus: true });
@@ -420,6 +433,7 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
       elements.building.value = view.buildingId || "";
       elements.day.value = DAYS.includes(view.day) ? view.day : DAYS[0];
       updateFloors(view.floor);
+      if (!previousBuilding && view.buildingId) view.focusKind = "building";
       render();
     },
     focusRoom(roomId) {

@@ -272,6 +272,64 @@
             return [...new Set(ids)];
         }
 
+        let roofObjectIds = [];
+
+        function collectRoofObjects() {
+            const scene = bimViewer.viewer.scene;
+            const nativeRoofs = objectIdsByTypes(["IfcRoof"])
+                .filter(objectId => scene.objects[objectId]);
+            if (nativeRoofs.length) {
+                roofObjectIds = nativeRoofs;
+                return;
+            }
+            const slabs = objectIdsByTypes(["IfcSlab"])
+                .filter(objectId => scene.objects[objectId]?.aabb);
+            if (!slabs.length) return;
+            const top = Math.max(...slabs.map(objectId => scene.objects[objectId].aabb[4]));
+            const [, ymin, , , ymax] = scene.getAABB(scene.objectIds || []);
+            const tolerance = Math.max((ymax - ymin) * 0.035, 0.25);
+            roofObjectIds = slabs.filter(objectId => scene.objects[objectId].aabb[4] >= top - tolerance);
+        }
+
+        function buildingBlockObjectIds(buildingIndex = 0, buildingCount = 1) {
+            const scene = bimViewer.viewer.scene;
+            const candidates = (scene.objectIds || [])
+                .filter(objectId => scene.objects[objectId]);
+            if (!candidates.length) return [];
+            const [xmin, , zmin, xmax, , zmax] = scene.getAABB(candidates);
+            const count = Math.max(1, Number(buildingCount) || 1);
+            const columns = Math.ceil(Math.sqrt(count));
+            const rows = Math.ceil(count / columns);
+            const index = Math.min(count - 1, Math.max(0, Number(buildingIndex) || 0));
+            const column = index % columns;
+            const row = Math.floor(index / columns);
+            const cellMinX = xmin + ((xmax - xmin) * column / columns);
+            const cellMaxX = xmin + ((xmax - xmin) * (column + 1) / columns);
+            const cellMinZ = zmin + ((zmax - zmin) * row / rows);
+            const cellMaxZ = zmin + ((zmax - zmin) * (row + 1) / rows);
+            const intersectsCell = objectId => {
+                const aabb = scene.objects[objectId]?.aabb;
+                return aabb && aabb[3] >= cellMinX && aabb[0] <= cellMaxX
+                    && aabb[5] >= cellMinZ && aabb[2] <= cellMaxZ;
+            };
+            let result = candidates.filter(intersectsCell);
+            if (!result.length) {
+                const centerX = (cellMinX + cellMaxX) / 2;
+                const centerZ = (cellMinZ + cellMaxZ) / 2;
+                result = candidates
+                    .map(objectId => {
+                        const aabb = scene.objects[objectId].aabb;
+                        const dx = ((aabb[0] + aabb[3]) / 2) - centerX;
+                        const dz = ((aabb[2] + aabb[5]) / 2) - centerZ;
+                        return [objectId, dx * dx + dz * dz];
+                    })
+                    .sort((left, right) => left[1] - right[1])
+                    .slice(0, Math.max(12, Math.ceil(candidates.length / count)))
+                    .map(item => item[0]);
+            }
+            return [...new Set([...result, ...roofObjectIds.filter(intersectsCell)])];
+        }
+
         function resetCampusTwinAppearance() {
             const scene = bimViewer.viewer.scene;
             const allIds = scene.objectIds || [];
@@ -280,6 +338,9 @@
             scene.setObjectsSelected(scene.selectedObjectIds || [], false);
             scene.setObjectsColorized(allIds, null);
             scene.setObjectsOpacity(allIds, 1.0);
+            scene.setObjectsVisible(roofObjectIds, true);
+            scene.setObjectsXRayed(roofObjectIds, false);
+            scene.setObjectsOpacity(roofObjectIds, 1.0);
             return allIds;
         }
 
@@ -303,6 +364,18 @@
             if (!allIds.length) return;
 
             const selection = state.selection;
+            if (selection?.kind === "building") {
+                const blockIds = buildingBlockObjectIds(selection.buildingIndex, selection.buildingCount);
+                if (blockIds.length) {
+                    scene.setObjectsXRayed(allIds, true);
+                    scene.setObjectsOpacity(allIds, 0.28);
+                    scene.setObjectsXRayed(blockIds, false);
+                    scene.setObjectsOpacity(blockIds, 1.0);
+                    scene.setObjectsColorized(blockIds, [0.72, 1.0, 0.13]);
+                    if (state.focus !== false) bimViewer.viewFitObjects(blockIds);
+                }
+                return;
+            }
             if (selection?.rootObjectIds?.length || selection?.objectIds?.length) {
                 const rootIds = selection.rootObjectIds || [];
                 const directIds = (selection.objectIds || []).filter(objectId => scene.objects[objectId]);
@@ -374,6 +447,7 @@
                 const modelCount = Object.keys(scene.models || {}).length;
                 if ((scene.objectIds || []).length > 0 && modelCount >= 3) {
                     window.clearInterval(timer);
+                    collectRoofObjects();
                     window.parent.postMessage({
                         type: "campus-twin-xeokit-ready",
                         objectCount: scene.objectIds.length,
