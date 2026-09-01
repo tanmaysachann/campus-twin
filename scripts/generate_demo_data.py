@@ -201,5 +201,7 @@ if __name__ == "__main__":
     OUT.write_text(payload, encoding="utf-8")
     DEPLOY_OUT.parent.mkdir(parents=True, exist_ok=True)
     DEPLOY_OUT.write_text(payload, encoding="utf-8")
+    from extract_xkt_spatial import main as extract_xkt_spatial
+    extract_xkt_spatial()
     print(f"Wrote {OUT} and {DEPLOY_OUT}")
     print({k: len(v) for k, v in data.items() if isinstance(v, list)})

@@ -1,10 +1,11 @@
 import { api } from "./api.js";
-import { createTwinStudio } from "./twin-studio.js?v=xeokit-1";
+import { createTwinStudio } from "./twin-studio.js?v=xeokit-2";
 
 const state = {
   summary: null,
   topology: null,
   rooms: [],
+  spatial: { storeys: [], spaces: [] },
   schedule: [],
   energy: [],
   dataQuality: null,
@@ -359,11 +360,11 @@ function renderExplore() {
   if (state.exploreTab === "rooms") {
     rows = state.rooms.filter(room => !query || [room.id, room.name, room.building_id, room.kind].some(value => String(value).toLowerCase().includes(query)));
     $("#exploreCount").textContent = `${rows.length} / ${state.rooms.length} rooms`;
-    $("#exploreTableWrap").innerHTML = `<table class="data-table"><thead><tr><th>Room</th><th>Building</th><th>Type</th><th>Floor</th><th>Capacity</th><th>Scheduled h</th><th>Util.</th></tr></thead><tbody>${rows.map(room => `<tr><td><strong>${esc(room.name)}</strong><div class="value-mono">${esc(room.id)}</div></td><td>${esc(room.building_id)}</td><td>${esc(room.kind)}</td><td class="value-mono">${esc(room.floor)}</td><td class="value-mono">${esc(room.capacity)}</td><td class="value-mono">${esc(room.scheduled_hours)}</td><td class="value-mono">${num(room.scheduled_utilization_pct)}%</td></tr>`).join("")}</tbody></table>`;
+    $("#exploreTableWrap").innerHTML = `<table class="data-table"><thead><tr><th>Room</th><th>Building</th><th>Type</th><th>Floor</th><th>Capacity</th><th>Scheduled h</th><th>Util.</th><th>BIM</th></tr></thead><tbody>${rows.map(room => `<tr><td><strong>${esc(room.name)}</strong><div class="value-mono">${esc(room.id)}</div></td><td>${esc(room.building_id)}</td><td>${esc(room.kind)}</td><td class="value-mono">${esc(room.floor)}</td><td class="value-mono">${esc(room.capacity)}</td><td class="value-mono">${esc(room.scheduled_hours)}</td><td class="value-mono">${num(room.scheduled_utilization_pct)}%</td><td><button class="table-bim-link" type="button" data-bim-room="${esc(room.id)}" ${room.bim_object_id ? "" : "disabled"}>VIEW SPACE</button></td></tr>`).join("")}</tbody></table>`;
   } else {
     rows = state.schedule.filter(session => !query || [session.section_id, session.course, session.department, session.room_name, session.building_id, session.day].some(value => String(value).toLowerCase().includes(query)));
     $("#exploreCount").textContent = `${rows.length} / ${state.schedule.length} sessions`;
-    $("#exploreTableWrap").innerHTML = `<table class="data-table"><thead><tr><th>Section</th><th>Course</th><th>When</th><th>Room</th><th>Enroll.</th><th>Seats</th><th>Fit</th></tr></thead><tbody>${rows.map(session => `<tr><td class="value-mono">${esc(session.section_id)}</td><td><strong>${esc(session.course)}</strong><div class="value-mono">${esc(session.department)}</div></td><td class="value-mono">${esc(session.day)} ${String(session.start_hour).padStart(2, "0")}:00</td><td>${esc(session.room_name)} <span class="value-mono">${esc(session.building_id)}</span></td><td class="value-mono">${esc(session.enrollment)}</td><td class="value-mono">${esc(session.capacity)}</td><td><span class="signal-chip ${session.over_capacity ? "critical" : "ok"}">${session.over_capacity ? "overflow" : "fit"}</span></td></tr>`).join("")}</tbody></table>`;
+    $("#exploreTableWrap").innerHTML = `<table class="data-table"><thead><tr><th>Section</th><th>Course</th><th>When</th><th>Room</th><th>Enroll.</th><th>Seats</th><th>Fit</th><th>BIM</th></tr></thead><tbody>${rows.map(session => `<tr><td class="value-mono">${esc(session.section_id)}</td><td><strong>${esc(session.course)}</strong><div class="value-mono">${esc(session.department)}</div></td><td class="value-mono">${esc(session.day)} ${String(session.start_hour).padStart(2, "0")}:00</td><td>${esc(session.room_name)} <span class="value-mono">${esc(session.building_id)}</span></td><td class="value-mono">${esc(session.enrollment)}</td><td class="value-mono">${esc(session.capacity)}</td><td><span class="signal-chip ${session.over_capacity ? "critical" : "ok"}">${session.over_capacity ? "overflow" : "fit"}</span></td><td><button class="table-bim-link" type="button" data-bim-room="${esc(session.room_id)}" ${session.bim_object_id ? "" : "disabled"}>VIEW CLASS</button></td></tr>`).join("")}</tbody></table>`;
   }
 }
 
@@ -952,10 +953,11 @@ async function loadAll() {
   const refresh = $("#refreshButton");
   setLoading(refresh, true);
   try {
-    const [summary, topology, rooms, schedule, energy, quality, priorities, interactions, scenarioHistory, scenarioComparison, feedbackHistory] = await Promise.all([
+    const [summary, topology, rooms, spatial, schedule, energy, quality, priorities, interactions, scenarioHistory, scenarioComparison, feedbackHistory] = await Promise.all([
       api.summary(),
       api.topology(),
       api.rooms(),
+      api.spatial(),
       api.schedule(),
       api.energy(),
       api.quality(),
@@ -968,6 +970,7 @@ async function loadAll() {
     state.summary = summary;
     state.topology = topology;
     state.rooms = rooms.rooms;
+    state.spatial = spatial;
     state.schedule = schedule.schedule;
     state.energy = energy.by_building;
     state.dataQuality = quality;
@@ -1004,6 +1007,8 @@ async function loadAll() {
       buildingPressure: state.topology.building_pressure,
       walkEdges: state.topology.walk_edges,
       routePressure: state.summary.route_pressure,
+      bimStoreys: state.spatial.storeys,
+      bimSpaces: state.spatial.spaces,
     });
     const databricks = summary.source.startsWith("databricks");
     $("#genieMode").textContent = databricks ? "Databricks Genie" : "Local constrained analyst";
@@ -1034,6 +1039,17 @@ function bindExplore() {
     renderExplore();
   }));
   $("#exploreSearch").addEventListener("input", renderExplore);
+  $("#exploreTableWrap").addEventListener("click", event => {
+    const trigger = event.target.closest("[data-bim-room]");
+    if (!trigger) return;
+    const room = state.rooms.find(item => item.id === trigger.dataset.bimRoom);
+    if (!room || !twinStudio.focusRoom(room.id)) {
+      toast("This room has no IFC space mapping in the current model.");
+      return;
+    }
+    navigate("studio");
+    toast(`${room.name} highlighted from its governed IFC space mapping.`);
+  });
 }
 
 function bindSimulation() {

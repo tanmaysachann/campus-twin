@@ -814,6 +814,20 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); padding: 1px 4px; m
   .studio-contract > div:first-child { border-top: 0; }
 }
 
+.table-bim-link {
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--blueprint);
+  padding: 6px 8px;
+  font: 700 11px/1.1 "Cascadia Mono", Consolas, monospace;
+  letter-spacing: .04em;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.table-bim-link:hover { border-color: var(--blueprint); background: #edf2f5; }
+.table-bim-link:disabled { opacity: .45; cursor: not-allowed; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; }
 }

@@ -18,6 +18,8 @@ TABLE_FIELDS = {
     "bus_demand": ["route_id", "timestamp", "passengers"],
     "events": ["id", "name", "building_id", "day", "start_hour", "expected_attendance"],
     "walk_edges": ["from_building_id", "to_building_id", "minutes"],
+    "bim_storeys": ["id", "name", "floor_index", "architecture_object_id", "mep_object_id", "structure_object_id"],
+    "bim_spaces": ["id", "name", "storey_id", "floor_index", "room_id", "render_object_id", "source_model_id"],
 }
 
 

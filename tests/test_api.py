@@ -22,8 +22,15 @@ def test_api_vertical_slice():
             assert summary.json()["counts"]["rooms"] == 58
             rooms = await client.get("/api/twin/rooms")
             assert len(rooms.json()["rooms"]) == 58
+            assert all(room["bim_object_id"] for room in rooms.json()["rooms"])
+            spatial = await client.get("/api/twin/spatial")
+            assert spatial.status_code == 200
+            assert len(spatial.json()["storeys"]) == 4
+            assert len(spatial.json()["spaces"]) == 113
+            assert spatial.json()["mapped_room_count"] == 58
             schedule = await client.get("/api/twin/schedule")
             assert len(schedule.json()["schedule"]) == 141
+            assert all(session["bim_object_id"] for session in schedule.json()["schedule"])
             quality = await client.get("/api/data/quality")
             assert quality.status_code == 200
             quality_body = quality.json()

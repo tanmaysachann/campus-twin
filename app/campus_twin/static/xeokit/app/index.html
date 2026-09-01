@@ -283,10 +283,39 @@
             return allIds;
         }
 
+        function renderableObjectIdsInSubtrees(rootIds = []) {
+            const scene = bimViewer.viewer.scene;
+            const metaScene = bimViewer.viewer.metaScene;
+            const result = [];
+            for (const rootId of rootIds) {
+                const metaObject = metaScene.metaObjects[rootId];
+                const subtreeIds = metaObject ? metaObject.getObjectIDsInSubtree() : [rootId];
+                for (const objectId of subtreeIds) {
+                    if (scene.objects[objectId]) result.push(objectId);
+                }
+            }
+            return [...new Set(result)];
+        }
+
         function applyCampusTwinState(state = {}) {
             const scene = bimViewer.viewer.scene;
             const allIds = resetCampusTwinAppearance();
             if (!allIds.length) return;
+
+            const selection = state.selection;
+            if (selection?.rootObjectIds?.length || selection?.objectIds?.length) {
+                const rootIds = selection.rootObjectIds || [];
+                const directIds = (selection.objectIds || []).filter(objectId => scene.objects[objectId]);
+                const focusIds = [...new Set([...renderableObjectIdsInSubtrees(rootIds), ...directIds])];
+                if (focusIds.length) {
+                    scene.setObjectsXRayed(allIds, true);
+                    scene.setObjectsXRayed(focusIds, false);
+                    scene.setObjectsColorized(focusIds, selection.kind === "room" ? [0.94, 0.29, 0.21] : [0.12, 0.63, 0.34]);
+                    scene.setObjectsSelected(focusIds, true);
+                    if (state.focus !== false) bimViewer.viewFitObjects(rootIds.length ? rootIds : focusIds);
+                }
+                return;
+            }
 
             const stage = Number(state.stage || 0);
             const layer = state.layer || "scenario";

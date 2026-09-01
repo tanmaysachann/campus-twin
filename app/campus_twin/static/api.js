@@ -17,6 +17,7 @@ export const api = {
   summary: () => request("/api/twin/summary"),
   topology: () => request("/api/twin/topology"),
   rooms: () => request("/api/twin/rooms"),
+  spatial: () => request("/api/twin/spatial"),
   schedule: () => request("/api/twin/schedule"),
   energy: () => request("/api/twin/energy"),
   quality: () => request("/api/data/quality"),

@@ -73,6 +73,8 @@ async def twin_summary(request: Request, runtime: RuntimeContext = Depends(get_r
             "energy_readings": len(snapshot.energy),
             "bus_routes": len(snapshot.bus_routes),
             "events": len(snapshot.events),
+            "bim_storeys": len(snapshot.bim_storeys),
+            "bim_spaces": len(snapshot.bim_spaces),
         },
     }
 
@@ -93,14 +95,39 @@ async def twin_topology(request: Request, runtime: RuntimeContext = Depends(get_
 async def twin_rooms(request: Request, runtime: RuntimeContext = Depends(get_runtime)):
     snapshot, source = await load_snapshot(request, runtime)
     hours = {r.id: 0 for r in snapshot.rooms}
+    storeys = {storey.id: storey for storey in snapshot.bim_storeys}
+    spaces_by_room = {space.room_id: space for space in snapshot.bim_spaces if space.room_id}
     for s in snapshot.schedules:
         hours[s.room_id] = hours.get(s.room_id, 0) + s.duration_hours
     return {
         "source": source,
         "rooms": [
-            r.model_dump() | {"scheduled_hours": hours.get(r.id, 0), "scheduled_utilization_pct": round(100 * hours.get(r.id, 0) / 60, 1)}
+            r.model_dump() | {
+                "scheduled_hours": hours.get(r.id, 0),
+                "scheduled_utilization_pct": round(100 * hours.get(r.id, 0) / 60, 1),
+                "bim_space_id": spaces_by_room[r.id].id if r.id in spaces_by_room else None,
+                "bim_object_id": spaces_by_room[r.id].render_object_id if r.id in spaces_by_room else None,
+                "bim_storey_id": spaces_by_room[r.id].storey_id if r.id in spaces_by_room else None,
+                "bim_storey_name": (
+                    storeys[spaces_by_room[r.id].storey_id].name
+                    if r.id in spaces_by_room and spaces_by_room[r.id].storey_id in storeys
+                    else None
+                ),
+            }
             for r in snapshot.rooms
         ],
+    }
+
+
+@router.get("/twin/spatial")
+async def twin_spatial(request: Request, runtime: RuntimeContext = Depends(get_runtime)):
+    snapshot, source = await load_snapshot(request, runtime)
+    return {
+        "source": source,
+        "model": "BMSCE Approximate BIM Demo",
+        "storeys": snapshot.bim_storeys,
+        "spaces": snapshot.bim_spaces,
+        "mapped_room_count": sum(1 for space in snapshot.bim_spaces if space.room_id),
     }
 
 
@@ -109,6 +136,7 @@ async def twin_schedule(request: Request, runtime: RuntimeContext = Depends(get_
     snapshot, source = await load_snapshot(request, runtime)
     rooms = {r.id: r for r in snapshot.rooms}
     sections = {s.id: s for s in snapshot.sections}
+    spaces_by_room = {space.room_id: space for space in snapshot.bim_spaces if space.room_id}
     rows = []
     for s in snapshot.schedules:
         room = rooms[s.room_id]
@@ -121,6 +149,9 @@ async def twin_schedule(request: Request, runtime: RuntimeContext = Depends(get_
             "capacity": room.capacity,
             "building_id": room.building_id,
             "over_capacity": sec.enrollment > room.capacity,
+            "bim_space_id": spaces_by_room[room.id].id if room.id in spaces_by_room else None,
+            "bim_object_id": spaces_by_room[room.id].render_object_id if room.id in spaces_by_room else None,
+            "bim_storey_id": spaces_by_room[room.id].storey_id if room.id in spaces_by_room else None,
         })
     return {"source": source, "schedule": rows}
 
@@ -431,6 +462,8 @@ async def data_quality(request: Request, runtime: RuntimeContext = Depends(get_r
         "bus_demand": len(snapshot.bus_demand),
         "events": len(snapshot.events),
         "walk_edges": len(snapshot.walk_edges),
+        "bim_storeys": len(snapshot.bim_storeys),
+        "bim_spaces": len(snapshot.bim_spaces),
     }
     required_tables = [
         "buildings",
@@ -442,6 +475,8 @@ async def data_quality(request: Request, runtime: RuntimeContext = Depends(get_r
         "bus_demand",
         "events",
         "walk_edges",
+        "bim_storeys",
+        "bim_spaces",
         "scenario_runs",
         "feedback",
     ]
@@ -506,6 +541,25 @@ async def data_quality(request: Request, runtime: RuntimeContext = Depends(get_r
         "schedule",
     ))
 
+    bim_storey_ids = {storey.id for storey in snapshot.bim_storeys}
+    bim_space_room_ids = {space.room_id for space in snapshot.bim_spaces if space.room_id}
+    bim_storey_gaps = sorted({space.storey_id for space in snapshot.bim_spaces if space.storey_id not in bim_storey_ids})
+    unmapped_rooms = sorted(room_ids - bim_space_room_ids)
+    checks.append(_quality_check(
+        "Operational room to IFC space mapping",
+        "fail" if bim_storey_gaps or unmapped_rooms else "pass",
+        (
+            f"{len(unmapped_rooms)} room(s) lack an IFC space and {len(bim_storey_gaps)} storey reference(s) do not resolve."
+            if bim_storey_gaps or unmapped_rooms
+            else "Every governed room resolves to an IFC-derived space and storey."
+        ),
+        [
+            f"SQL: SELECT r.id FROM {namespace}.rooms r LEFT ANTI JOIN {namespace}.bim_spaces s ON s.room_id = r.id;",
+            f"Mapped rooms: {len(bim_space_room_ids)} / {len(room_ids)}; IFC spaces: {len(snapshot.bim_spaces)}.",
+        ],
+        "space",
+    ))
+
     energy_building_gaps = sorted({reading.building_id for reading in snapshot.energy if reading.building_id not in building_ids})
     checks.append(_quality_check(
         "Energy to building references",
@@ -557,6 +611,8 @@ async def data_quality(request: Request, runtime: RuntimeContext = Depends(get_r
         "schedules": _duplicates([item.id for item in snapshot.schedules]),
         "bus_routes": _duplicates([item.id for item in snapshot.bus_routes]),
         "events": _duplicates([item.id for item in snapshot.events]),
+        "bim_storeys": _duplicates([item.id for item in snapshot.bim_storeys]),
+        "bim_spaces": _duplicates([item.id for item in snapshot.bim_spaces]),
     }
     duplicate_total = sum(len(items) for items in duplicate_groups.values())
     duplicate_summary = "; ".join(f"{table}: {', '.join(values[:5])}" for table, values in duplicate_groups.items() if values)

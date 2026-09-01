@@ -29,6 +29,12 @@ Campus event, building, time and expected attendance.
 ### `walk_edges`
 Undirected campus topology edge represented as one stored pair with walking minutes.
 
+### `bim_storeys`
+IFC-derived storey identity and the corresponding architecture, MEP, and structural xeokit object IDs.
+
+### `bim_spaces`
+IFC-derived space identity, render object ID, parent storey, source XKT model, and optional governed room mapping. The deterministic demo maps every operational room to one same-floor IFC space while retaining all 113 spaces from the model.
+
 ## Operational memory
 
 ### `scenario_runs`
@@ -65,8 +71,9 @@ The deterministic seed (`20260830`) generates:
 - 120 peak-period bus demand rows;
 - 5 events;
 - a 15-edge walking topology.
+- 4 IFC-derived BIM storeys and 113 IFC spaces, with all 58 governed rooms mapped.
 
-Run `python scripts/generate_demo_data.py` to reproduce the snapshot byte-for-byte for a given Python implementation and seed logic.
+Run `python scripts/generate_demo_data.py` to reproduce the operational snapshot and then refresh the IFC-derived spatial mapping from the bundled XKT model.
 
 ## What is deliberately absent
 

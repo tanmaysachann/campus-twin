@@ -82,6 +82,25 @@ class WalkEdge(BaseModel):
     minutes: int = Field(gt=0)
 
 
+class BIMStorey(BaseModel):
+    id: str
+    name: str
+    floor_index: int
+    architecture_object_id: str
+    mep_object_id: str | None = None
+    structure_object_id: str | None = None
+
+
+class BIMSpace(BaseModel):
+    id: str
+    name: str
+    storey_id: str
+    floor_index: int
+    room_id: str | None = None
+    render_object_id: str
+    source_model_id: str
+
+
 class CampusSnapshot(BaseModel):
     version: str
     generated_at: datetime
@@ -94,6 +113,8 @@ class CampusSnapshot(BaseModel):
     bus_demand: list[BusDemand]
     events: list[CampusEvent]
     walk_edges: list[WalkEdge]
+    bim_storeys: list[BIMStorey] = Field(default_factory=list)
+    bim_spaces: list[BIMSpace] = Field(default_factory=list)
 
 
 class MetricDelta(BaseModel):

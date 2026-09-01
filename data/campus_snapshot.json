@@ -11017,5 +11017,1058 @@
       "to_building_id": "B04",
       "minutes": 4
     }
+  ],
+  "bim_storeys": [
+    {
+      "id": "BMS-DEMO-F0",
+      "name": "01 - Entry Level",
+      "floor_index": 0,
+      "architecture_object_id": "0PoxgcX4D9WwgX4npApf$N",
+      "mep_object_id": "1$Du4Y8tH49Q53auIlkcBU",
+      "structure_object_id": "3dEOhMf915CgwywKfakpTT"
+    },
+    {
+      "id": "BMS-DEMO-F1",
+      "name": "02 - Floor",
+      "floor_index": 1,
+      "architecture_object_id": "0PoxgcX4D9WwgX4npApf$K",
+      "mep_object_id": "1$Du4Y8tH49Q53auIlkcBT",
+      "structure_object_id": "3dEOhMf915CgwywKfakpTU"
+    },
+    {
+      "id": "BMS-DEMO-F2",
+      "name": "03 - Floor",
+      "floor_index": 2,
+      "architecture_object_id": "0PoxgcX4D9WwgX4npApf$L",
+      "mep_object_id": "1$Du4Y8tH49Q53auIlkcBS",
+      "structure_object_id": "3dEOhMf915CgwywKfakpTV"
+    },
+    {
+      "id": "BMS-DEMO-F3",
+      "name": "Roof",
+      "floor_index": 3,
+      "architecture_object_id": "0PoxgcX4D9WwgX4npApf_g",
+      "mep_object_id": "1$Du4Y8tH49Q53auIlkcAZ",
+      "structure_object_id": "3dEOhMf915CgwywKfakpSW"
+    }
+  ],
+  "bim_spaces": [
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm8_",
+      "name": "1",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B01-R01",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm8__0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm9v",
+      "name": "101",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B01-R02",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm9v_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm9a",
+      "name": "102",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B01-R03",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm9a_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm8V",
+      "name": "104",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B02-R01",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm8V_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm8U",
+      "name": "105",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B02-R02",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm8U_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm8T",
+      "name": "106",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B02-R03",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm8T_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm8J",
+      "name": "107",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B03-R01",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm8J_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm8S",
+      "name": "108",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B03-R02",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm8S_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm8I",
+      "name": "109",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B03-R03",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm8I_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm8H",
+      "name": "110",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B04-R01",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm8H_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm8N",
+      "name": "112",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B04-R02",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm8N_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm9b",
+      "name": "121",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B04-R03",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm9b_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm9c",
+      "name": "122",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B05-R01",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm9c_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm9X",
+      "name": "123",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B05-R02",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm9X_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm9d",
+      "name": "124",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B05-R03",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm9d_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm9W",
+      "name": "125",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B06-R01",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm9W_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm9Z",
+      "name": "126",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B06-R02",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm9Z_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm9Y",
+      "name": "127",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B06-R03",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm9Y_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm9j",
+      "name": "129",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B07-R01",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm9j_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm8$",
+      "name": "2",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B07-R02",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm8$_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm8j",
+      "name": "3",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B07-R03",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm8j_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm8k",
+      "name": "4",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B08-R01",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm8k_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm8l",
+      "name": "5",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B08-R02",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm8l_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscYEj",
+      "name": "51",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": "B08-R03",
+      "render_object_id": "3NqtvZxkT6zOmsjEVscYEj_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscYEi",
+      "name": "52",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscYEi_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY9U",
+      "name": "53",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY9U_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY9T",
+      "name": "54",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY9T_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY9S",
+      "name": "55",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY9S_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY9J",
+      "name": "56",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY9J_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY9I",
+      "name": "57",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY9I_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY9H",
+      "name": "58",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY9H_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY9G",
+      "name": "59",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY9G_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm8e",
+      "name": "6",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm8e_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm8f",
+      "name": "7",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm8f_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm8g",
+      "name": "8",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm8g_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOm8h",
+      "name": "9",
+      "storey_id": "BMS-DEMO-F0",
+      "floor_index": 0,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOm8h_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOFta",
+      "name": "10",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B01-R04",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOFta_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOFtb",
+      "name": "11",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B01-R05",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOFtb_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOFtc",
+      "name": "12",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B01-R06",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOFtc_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOFtd",
+      "name": "13",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B02-R04",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOFtd_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOFtW",
+      "name": "14",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B02-R05",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOFtW_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOFtX",
+      "name": "15",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B02-R06",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOFtX_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOFtY",
+      "name": "16",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B03-R04",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOFtY_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOFtZ",
+      "name": "17",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B03-R05",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOFtZ_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOFti",
+      "name": "18",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B03-R06",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOFti_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXA",
+      "name": "201",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B04-R04",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXA_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXq",
+      "name": "203",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B04-R05",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXq_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXr",
+      "name": "204",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B04-R06",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXr_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXs",
+      "name": "205",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B05-R04",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXs_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOElM",
+      "name": "206",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B05-R05",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOElM_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOElN",
+      "name": "207",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B05-R06",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOElN_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOElG",
+      "name": "208",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B06-R04",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOElG_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOElH",
+      "name": "209",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B06-R05",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOElH_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXm",
+      "name": "210",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B06-R06",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXm_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXo",
+      "name": "211",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B07-R04",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXo_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXp",
+      "name": "212",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B07-R05",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXp_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXy",
+      "name": "214",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B08-R04",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXy_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXu",
+      "name": "219",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B08-R05",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXu_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXv",
+      "name": "220",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": "B08-R06",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXv_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXw",
+      "name": "221",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXw_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXx",
+      "name": "222",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXx_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXa",
+      "name": "223",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXa_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXc",
+      "name": "224",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXc_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXd",
+      "name": "225",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXd_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXW",
+      "name": "226",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXW_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXX",
+      "name": "227",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXX_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXY",
+      "name": "228",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXY_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXZ",
+      "name": "229",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXZ_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXi",
+      "name": "230",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXi_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXk",
+      "name": "232",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXk_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "0ZJMJVa4L8pPpZgbL0kWS4",
+      "name": "313",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "0ZJMJVa4L8pPpZgbL0kWS4_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY9d",
+      "name": "60",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY9d_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY9c",
+      "name": "61",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY9c_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY9b",
+      "name": "62",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY9b_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY9a",
+      "name": "63",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY9a_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY8R",
+      "name": "64",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY8R_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY8Q",
+      "name": "65",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY8Q_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY8P",
+      "name": "66",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY8P_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY8O",
+      "name": "67",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY8O_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY8V",
+      "name": "68",
+      "storey_id": "BMS-DEMO-F1",
+      "floor_index": 1,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY8V_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOFsq",
+      "name": "20",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": "B01-R07",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOFsq_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOFsr",
+      "name": "21",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": "B01-R08",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOFsr_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOFss",
+      "name": "22",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": "B01-R09",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOFss_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOFst",
+      "name": "23",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": "B02-R07",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOFst_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOFsm",
+      "name": "24",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": "B02-R08",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOFsm_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOFsn",
+      "name": "25",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": "B02-R09",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOFsn_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXf",
+      "name": "301",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": "B03-R07",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXf_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEXh",
+      "name": "303",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": "B03-R08",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEXh_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEWK",
+      "name": "304",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": "B05-R07",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEWK_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEWL",
+      "name": "305",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": "B05-R08",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEWL_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEWM",
+      "name": "306",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": "B08-R07",
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEWM_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEWN",
+      "name": "307",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEWN_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEWG",
+      "name": "308",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEWG_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEWH",
+      "name": "309",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEWH_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEWI",
+      "name": "310",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEWI_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEWT",
+      "name": "314",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEWT_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEWU",
+      "name": "315",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEWU_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEWV",
+      "name": "316",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEWV_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEWO",
+      "name": "317",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEWO_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEWQ",
+      "name": "319",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEWQ_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEWR",
+      "name": "320",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEWR_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEW4",
+      "name": "321",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEW4_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEW5",
+      "name": "322",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEW5_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEW6",
+      "name": "323",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEW6_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEW7",
+      "name": "324",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEW7_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEW0",
+      "name": "325",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEW0_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "1Ymw2Qiez6buX6OkVzOEW1",
+      "name": "326",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "1Ymw2Qiez6buX6OkVzOEW1_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY8t",
+      "name": "70",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY8t_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY8s",
+      "name": "71",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY8s_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY8r",
+      "name": "72",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY8r_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY8q",
+      "name": "73",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY8q_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY8h",
+      "name": "74",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY8h_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    },
+    {
+      "id": "3NqtvZxkT6zOmsjEVscY8g",
+      "name": "75",
+      "storey_id": "BMS-DEMO-F2",
+      "floor_index": 2,
+      "room_id": null,
+      "render_object_id": "3NqtvZxkT6zOmsjEVscY8g_0",
+      "source_model_id": "AR-Demo_Sample_Single_Building_01"
+    }
   ]
 }

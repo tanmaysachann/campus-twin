@@ -73,6 +73,25 @@ CREATE TABLE IF NOT EXISTS {namespace}.walk_edges (
   minutes INT NOT NULL
 ) USING DELTA;
 
+CREATE TABLE IF NOT EXISTS {namespace}.bim_storeys (
+  id STRING NOT NULL,
+  name STRING NOT NULL,
+  floor_index INT NOT NULL,
+  architecture_object_id STRING NOT NULL,
+  mep_object_id STRING,
+  structure_object_id STRING
+) USING DELTA;
+
+CREATE TABLE IF NOT EXISTS {namespace}.bim_spaces (
+  id STRING NOT NULL,
+  name STRING NOT NULL,
+  storey_id STRING NOT NULL,
+  floor_index INT NOT NULL,
+  room_id STRING,
+  render_object_id STRING NOT NULL,
+  source_model_id STRING NOT NULL
+) USING DELTA;
+
 CREATE TABLE IF NOT EXISTS {namespace}.scenario_runs (
   scenario_id STRING NOT NULL,
   name STRING NOT NULL,

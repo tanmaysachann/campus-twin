@@ -31,7 +31,7 @@ function stageAction(plan, type) {
 
 export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
   const host = typeof root === "string" ? document.querySelector(root) : root;
-  if (!host) return { setData() {}, render() {} };
+  if (!host) return { setData() {}, render() {}, focusRoom() {}, focusFloor() {} };
 
   const elements = {
     building: host.querySelector("#studioBuilding"),
@@ -72,10 +72,11 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
     layer: "scenario",
     stage: 0,
     selectedRoomId: null,
+    focusKind: "floor",
   };
   let data = {
     rooms: [], schedule: [], buildings: [], energy: [], buildingPressure: [],
-    routePressure: [], summary: null, plan: null,
+    routePressure: [], summary: null, plan: null, bimStoreys: [], bimSpaces: [],
   };
   let viewerReady = false;
   let xeokitStats = { objectCount: 0, storeyCount: 0, modelCount: 0 };
@@ -87,6 +88,43 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
 
   function roomById(id) {
     return data.rooms.find(room => room.id === id) || null;
+  }
+
+  function storeyForFloor(floor) {
+    return data.bimStoreys.find(storey => Number(storey.floor_index) === Number(floor)) || null;
+  }
+
+  function spaceForRoom(roomId) {
+    return data.bimSpaces.find(space => space.room_id === roomId) || null;
+  }
+
+  function selectionForView() {
+    if (view.focusKind === "room" && view.selectedRoomId) {
+      const space = spaceForRoom(view.selectedRoomId);
+      if (space) {
+        return {
+          kind: "room",
+          label: `${roomById(view.selectedRoomId)?.name || view.selectedRoomId} / IFC SPACE ${space.name}`,
+          rootObjectIds: [space.id],
+          objectIds: [space.id, space.render_object_id].filter(Boolean),
+        };
+      }
+    }
+    if (view.focusKind === "floor") {
+      const storey = storeyForFloor(view.floor);
+      if (storey) {
+        return {
+          kind: "floor",
+          label: storey.name,
+          rootObjectIds: [
+            storey.architecture_object_id,
+            storey.mep_object_id,
+            storey.structure_object_id,
+          ].filter(Boolean),
+        };
+      }
+    }
+    return null;
   }
 
   function visibleRooms() {
@@ -194,6 +232,7 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
         day: view.day,
         hour: view.hour,
         focus,
+        selection: selectionForView(),
       },
     });
   }
@@ -311,6 +350,7 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
   function bind() {
     elements.building.addEventListener("change", () => {
       view.buildingId = elements.building.value;
+      view.focusKind = "floor";
       updateFloors();
       render();
       sendViewerState({ focus: true });
@@ -318,6 +358,7 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
     elements.floor.addEventListener("change", () => {
       view.floor = Number(elements.floor.value);
       view.selectedRoomId = visibleRooms()[0]?.id || null;
+      view.focusKind = "floor";
       render();
       sendViewerState({ focus: true });
     });
@@ -327,6 +368,7 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
     elements.play.addEventListener("click", playScenario);
     host.querySelectorAll("[data-studio-layer]").forEach(button => button.addEventListener("click", () => {
       view.layer = button.dataset.studioLayer;
+      view.focusKind = null;
       host.querySelectorAll("[data-studio-layer]").forEach(item => item.classList.toggle("is-active", item === button));
       render();
       sendViewerState({ focus: true });
@@ -379,6 +421,29 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
       elements.day.value = DAYS.includes(view.day) ? view.day : DAYS[0];
       updateFloors(view.floor);
       render();
+    },
+    focusRoom(roomId) {
+      const room = roomById(roomId);
+      if (!room) return false;
+      view.buildingId = room.building_id;
+      view.floor = Number(room.floor);
+      view.selectedRoomId = room.id;
+      view.focusKind = "room";
+      elements.building.value = view.buildingId;
+      updateFloors(view.floor);
+      elements.floor.value = String(view.floor);
+      render();
+      sendViewerState({ focus: true });
+      return true;
+    },
+    focusFloor(buildingId, floor) {
+      if (data.buildings.some(building => building.id === buildingId)) view.buildingId = buildingId;
+      view.floor = Number(floor);
+      view.focusKind = "floor";
+      elements.building.value = view.buildingId || "";
+      updateFloors(view.floor);
+      render();
+      sendViewerState({ focus: true });
     },
     render,
   };

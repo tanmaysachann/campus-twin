@@ -11,9 +11,9 @@ This repository is intentionally more than a dashboard. The design separates **f
 - A polished single-page CampusTwin application with no frontend build step.
 - An embedded xeokit BIM Viewer workspace with official XKT architecture, building-services, and structural demo models plus CampusTwin scenario overlays.
 - FastAPI backend with typed contracts and OpenAPI docs.
-- Deterministic bundled campus dataset: 8 buildings, 58 rooms, 47 sections, 141 weekly sessions, 4 bus routes, 7 days of hourly building energy, events, and a walking graph.
+- Deterministic bundled campus dataset: 8 buildings, 58 rooms mapped to 113 IFC-derived spaces across 4 BIM storeys, 47 sections, 141 weekly sessions, 4 bus routes, 7 days of hourly building energy, events, and a walking graph.
 - Delta-backed Databricks repository over the SQL Statement Execution API.
-- One-click bootstrap from the app: schema, 9 canonical Delta tables, operational tables, 5 gold views, demo seed data.
+- One-click bootstrap from the app: schema, 11 canonical Delta tables, operational tables, 5 gold views, demo seed data.
 - Databricks Genie Space provisioning through the official Genie API.
 - What-if engine with room closure, class relocation, rescheduling, intake change, and bus service change actions.
 - Cross-domain decision metrics, cascade explanations, score/verdict, and Monte Carlo confidence bands.
@@ -95,6 +95,7 @@ GET  /api/health
 GET  /api/twin/summary
 GET  /api/twin/topology
 GET  /api/twin/rooms
+GET  /api/twin/spatial
 GET  /api/twin/schedule
 POST /api/scenarios/simulate
 POST /api/genie/chat
@@ -210,6 +211,9 @@ Campus topology
       ├──< energy
       ├──< events
       └── walk_edges >── buildings
+
+BIM linkage
+  bim_storeys ──< bim_spaces >── rooms
 
 Mobility
   bus_routes ──< bus_demand

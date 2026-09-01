@@ -10,7 +10,7 @@ from .sql import StatementExecutor
 
 DDL_ORDER = [
     "buildings", "rooms", "sections", "schedules", "energy", "bus_routes",
-    "bus_demand", "events", "walk_edges",
+    "bus_demand", "events", "walk_edges", "bim_storeys", "bim_spaces",
 ]
 
 
