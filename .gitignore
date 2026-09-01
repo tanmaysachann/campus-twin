@@ -1,0 +1,12 @@
+.venv/
+.databricks/
+tmp/
+__pycache__/
+.pytest_cache/
+*.pyc
+.env
+.env.databricks
+.env.local
+.DS_Store
+*.log
+references/frameworks/

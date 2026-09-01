@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#071b18" />
+  <meta name="description" content="A Genie-powered campus decision twin for asking questions, testing interventions, and learning from outcomes." />
+  <title>CampusTwin | Ask. Simulate. Decide.</title>
+  <link rel="icon" href="/static/favicon.svg" />
+  <link rel="stylesheet" href="/static/vendor/cesium/Widgets/widgets.css" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail" aria-label="Primary navigation">
+      <a class="brand" href="#overview" data-nav="overview" aria-label="CampusTwin home">
+        <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M7 9h12v12H7zM29 9h12v12H29zM7 28h12v11H7zM29 28h12v11H29z" fill="none" stroke="currentColor" stroke-width="2.4"/>
+          <path d="M19 15h10M13 21v7M35 21v7M19 33.5h10" stroke="currentColor" stroke-width="2.4"/>
+          <circle cx="24" cy="24" r="4" fill="currentColor"/>
+        </svg>
+        <span class="brand-copy"><strong>CampusTwin</strong><small>DECISION OS</small></span>
+      </a>
+
+      <div class="rail-section-label">WORKSPACES</div>
+      <nav class="rail-nav">
+        <button class="nav-item is-active" data-view="overview"><span class="nav-glyph">01</span><span>Campus pulse</span></button>
+        <button class="nav-item nav-item-core" data-view="genie"><span class="nav-glyph">AI</span><span>Ask Genie</span><i>CORE</i></button>
+        <button class="nav-item nav-item-studio" data-view="studio"><span class="nav-glyph">3D</span><span>Twin Studio</span><i>NEW</i></button>
+        <button class="nav-item" data-view="simulate"><span class="nav-glyph">02</span><span>Scenario lab</span></button>
+        <button class="nav-item" data-view="explore"><span class="nav-glyph">03</span><span>Data atlas</span></button>
+        <button class="nav-item" data-view="feedback"><span class="nav-glyph">04</span><span>Outcome loop</span></button>
+      </nav>
+
+      <div class="rail-proof">
+        <span>POWERED BY</span>
+        <strong>DATABRICKS + GENIE</strong>
+      </div>
+
+      <div class="rail-foot">
+        <div class="mode-line">
+          <span class="status-dot" id="sourceDot"></span>
+          <div><strong id="sourceLabel">Loading twin</strong><small id="sourceMeta">CONNECTING</small></div>
+        </div>
+        <button class="quiet-button" id="openSetup">Databricks setup</button>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div class="breadcrumb"><span>CampusTwin</span><i>/</i><strong id="viewCrumb">Campus pulse</strong></div>
+        <div class="decision-path" aria-label="Decision workflow">
+          <span>QUESTION</span><i></i><span>EVIDENCE</span><i></i><span>SCENARIO</span><i></i><span>DECISION</span>
+        </div>
+        <div class="top-actions">
+          <span class="live-chip"><i></i> GENIE READY</span>
+          <span class="timestamp" id="generatedAt">Snapshot loading</span>
+          <button class="key-button" id="refreshButton"><kbd>R</kbd> Refresh</button>
+        </div>
+      </header>
+
+      <section class="view is-visible" id="view-overview" aria-labelledby="overview-title">
+        <div class="intro-grid">
+          <div class="intro-copy">
+            <h1 id="overview-title">Ask the campus.<br /><span class="title-accent">Test the answer.</span></h1>
+            <p class="intro-lede">CampusTwin turns fragmented campus data into a governed decision loop. Ask Genie what is happening, test a response in the digital twin, and see the trade-offs before the real campus changes.</p>
+            <p class="track-note">Track B: Creative Campus Intelligence</p>
+
+            <form class="intro-command" id="overviewGenieForm">
+              <label for="overviewGenieQuestion">START WITH A CAMPUS QUESTION</label>
+              <div class="intro-command-row">
+                <input id="overviewGenieQuestion" type="text" value="Where is the campus under the most pressure right now?" maxlength="4000" />
+                <button class="command-button" type="submit">ASK GENIE</button>
+              </div>
+            </form>
+
+            <div class="intro-prompts" aria-label="Suggested Genie questions">
+              <button type="button" data-hero-question="Where are the current capacity mismatches?">Capacity risk</button>
+              <button type="button" data-hero-question="Which bus route has the highest peak pressure?">Transport pressure</button>
+              <button type="button" data-hero-question="Which building used the most energy on the latest day?">Energy outlier</button>
+            </div>
+          </div>
+
+          <aside class="command-readout" aria-label="Campus operating state">
+            <div class="readout-top"><span>CAMPUS PULSE</span><strong>CURRENT DECISION STATE</strong></div>
+            <div class="health-stamp" id="healthStamp"><span>OPS SCORE</span><strong>--</strong><small>calculating</small></div>
+            <div class="readout-divider"></div>
+            <div class="system-readout" id="decisionProof">
+              <div><span>GOVERNED TABLES</span><strong>--</strong></div>
+              <div><span>GOLD VIEWS</span><strong>5</strong></div>
+              <div><span>INTERVENTIONS</span><strong>5</strong></div>
+              <div><span>GENIE AGENT</span><strong>LINKED</strong></div>
+            </div>
+            <p>One operational model across space, schedules, energy, mobility, and events.</p>
+          </aside>
+        </div>
+
+        <div class="proof-strip" aria-label="Platform proof">
+          <div><span>DATA PLANE</span><strong>Delta tables</strong><small>Governed campus state</small></div>
+          <div><span>INTELLIGENCE</span><strong>Databricks Genie</strong><small>Natural-language analysis</small></div>
+          <div><span>DECISION ENGINE</span><strong>Counterfactual twin</strong><small>Five intervention types</small></div>
+          <div><span>LEARNING LOOP</span><strong>Predicted vs observed</strong><small>Residuals retained</small></div>
+        </div>
+
+        <section class="judge-demo panel" aria-labelledby="judge-demo-title">
+          <div class="judge-demo-copy">
+            <span class="panel-context">JUDGE DEMO PATH</span>
+            <h2 id="judge-demo-title">One click: ask, simulate, persist, compare.</h2>
+            <p>The flow uses the active governed twin to ask Genie for the first investigation, run a resilience response, save the scenario when Databricks is active, and refresh decision memory.</p>
+            <button class="primary-button" id="runJudgeDemo" type="button" disabled>RUN JUDGE DEMO</button>
+          </div>
+          <div class="judge-demo-plan">
+            <header><span>READY FLOW</span><strong id="judgeDemoStatus">Waiting for snapshot</strong></header>
+            <ol id="judgeDemoManifest">
+              <li><span>--</span><strong>BUILDING FLOW</strong><p>Load the active twin to build the demo path.</p></li>
+            </ol>
+          </div>
+        </section>
+
+        <div class="section-intro">
+          <div><h2>The campus at a glance</h2></div>
+          <p>These are modeled operational signals, not claims of live occupancy.</p>
+        </div>
+
+        <div class="metric-strip" id="metricStrip" aria-label="Campus metrics"></div>
+
+        <section class="panel ops-queue" aria-labelledby="priority-title">
+          <header class="panel-head">
+            <div><h2 id="priority-title">Operations priority queue</h2><span class="panel-context">RANKED FROM GOVERNED CAMPUS SIGNALS</span></div>
+            <span class="panel-note">DECISION LAYER</span>
+          </header>
+          <div id="priorityQueue" class="priority-list"></div>
+        </section>
+
+        <section class="panel interaction-panel" aria-labelledby="interaction-title">
+          <header class="panel-head">
+            <div><h2 id="interaction-title">Cross-domain interaction risks</h2><span class="panel-context">WHERE SCHEDULES, EVENTS, ENERGY, AND MOBILITY COLLIDE</span></div>
+            <span class="panel-note">SYSTEM VIEW</span>
+          </header>
+          <div id="interactionRisks" class="interaction-list"></div>
+        </section>
+
+        <div class="overview-grid">
+          <article class="panel map-panel">
+            <header class="panel-head">
+              <div><h2>Campus pressure topology</h2><span class="panel-context">INTERCONNECTED BUILDINGS AND WALK EDGES</span></div>
+              <div class="legend"><span><i class="legend-mark normal"></i>stable</span><span><i class="legend-mark watch"></i>watch</span><span><i class="legend-mark critical"></i>critical</span></div>
+            </header>
+            <div class="campus-map-wrap"><svg id="campusMap" class="campus-map" viewBox="0 0 760 430" role="img" aria-label="Campus building topology map"></svg></div>
+          </article>
+
+          <article class="panel brief-panel">
+            <header class="panel-head"><div><h2>Decision brief</h2><span class="panel-context">PRIORITIZED SYSTEM READ</span></div><span class="mono-tag">AUTO</span></header>
+            <div id="briefing" class="briefing"></div>
+            <button class="text-action" id="investigatePriority" type="button">INVESTIGATE WITH GENIE <span>OPEN</span></button>
+          </article>
+        </div>
+
+        <div class="lower-grid">
+          <article class="panel pressure-panel">
+            <header class="panel-head"><div><h2>Building pressure</h2><span class="panel-context">SCHEDULED HOURS / AVAILABLE HOURS</span></div><span class="panel-note">SPACE</span></header>
+            <div class="data-table-wrap"><table class="data-table" id="buildingTable"><thead><tr><th>Building</th><th>Util.</th><th>Sessions</th><th>Over cap.</th><th>Signal</th></tr></thead><tbody></tbody></table></div>
+          </article>
+          <article class="panel pressure-panel">
+            <header class="panel-head"><div><h2>Route pressure</h2><span class="panel-context">PEAK DEMAND / ACTIVE CAPACITY</span></div><span class="panel-note">MOBILITY</span></header>
+            <div class="data-table-wrap"><table class="data-table" id="routeTable"><thead><tr><th>Route</th><th>Peak load</th><th>Buses</th><th>Headway</th><th>Signal</th></tr></thead><tbody></tbody></table></div>
+          </article>
+        </div>
+
+        <div class="decision-loop" aria-label="CampusTwin decision loop">
+          <div><span>01</span><strong>OBSERVE</strong><small>Unify the campus state</small></div>
+          <i></i><div><span>02</span><strong>ASK</strong><small>Interrogate it with Genie</small></div>
+          <i></i><div><span>03</span><strong>SIMULATE</strong><small>Test an intervention</small></div>
+          <i></i><div><span>04</span><strong>DECIDE</strong><small>Compare trade-offs</small></div>
+          <i></i><div><span>05</span><strong>LEARN</strong><small>Record the outcome</small></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-genie" aria-labelledby="genie-title">
+        <div class="view-heading feature-heading">
+          <div>
+            <h1 id="genie-title">From question to<br /><span class="title-accent">decision evidence.</span></h1>
+            <p class="lede">Ask in plain language. Genie selects governed gold views, generates SQL, and returns evidence that can move directly into the scenario lab.</p>
+          </div>
+          <div class="feature-proof"><span>ANALYSIS MODE</span><strong id="genieMode">Detecting</strong><p id="genieModeNote">Checking the active twin source.</p></div>
+        </div>
+
+        <div class="journey-strip" aria-label="Genie decision journey">
+          <div class="is-active"><span>01</span><strong>ASK</strong></div><i></i>
+          <div><span>02</span><strong>GROUND</strong></div><i></i>
+          <div><span>03</span><strong>TEST</strong></div><i></i>
+          <div><span>04</span><strong>DECIDE</strong></div>
+        </div>
+
+        <div class="genie-layout">
+          <article class="panel conversation-panel">
+            <div class="conversation-head">
+              <div><span class="status-line"><i></i> GENIE SESSION ACTIVE</span><h2>Decision desk</h2></div>
+              <span class="conversation-id" id="conversationIdLabel">NEW CONVERSATION</span>
+            </div>
+            <div class="conversation" id="conversation">
+              <div class="message assistant welcome-message">
+                <div class="message-meta">DATABRICKS GENIE</div>
+                <div class="formatted-answer"><p>Ask about room capacity, timetable pressure, energy, mobility, or the current campus state. I will show the evidence and generated SQL behind the answer.</p></div>
+              </div>
+            </div>
+            <form class="composer" id="genieForm">
+              <div class="composer-field"><label for="genieQuestion">ASK THE GOVERNED TWIN</label><textarea id="genieQuestion" rows="2" placeholder="What should campus operations investigate first?" required></textarea></div>
+              <button type="submit" class="primary-button">RUN GENIE</button>
+            </form>
+          </article>
+
+          <aside class="genie-side">
+            <section class="panel prompt-panel">
+              <header class="panel-head"><div><h2>Grounded prompts</h2><span class="panel-context">START A JUDGE-READY FLOW</span></div></header>
+              <div class="prompt-list" id="promptList"></div>
+            </section>
+            <section class="panel evidence-contract">
+              <span class="panel-context">EVIDENCE CONTRACT</span>
+              <h3>No black-box answer.</h3>
+              <div><span>01</span><p>Question mapped to governed views</p></div>
+              <div><span>02</span><p>Generated SQL stays inspectable</p></div>
+              <div><span>03</span><p>Returned rows remain attached</p></div>
+            </section>
+            <section class="panel decision-bridge" id="decisionBridge" hidden>
+              <span class="panel-context">NEXT MOVE</span>
+              <h3 id="decisionBridgeTitle">Test an intervention</h3>
+              <p id="decisionBridgeCopy">Carry this finding into the scenario lab.</p>
+              <button class="primary-button" id="openScenarioFromGenie" type="button">OPEN SCENARIO LAB</button>
+            </section>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" id="view-studio" aria-labelledby="studio-title">
+        <div class="view-heading feature-heading">
+          <div>
+            <h1 id="studio-title">See the campus change<br /><span class="title-accent">before anyone moves.</span></h1>
+            <p class="lede">Move from a campus-scale geospatial model to a room-level floor twin. Inspect scheduled activity and step through the compound resilience scenario before anyone moves.</p>
+          </div>
+          <div class="feature-proof"><span>GEOMETRY CONTRACT</span><strong>INVENTORY-DERIVED MODEL</strong><p>Room semantics are governed. Shapes are generated for simulation and are not surveyed CAD geometry.</p></div>
+        </div>
+
+        <div class="studio-commandbar panel" aria-label="Spatial twin controls">
+          <label><span>BUILDING</span><select id="studioBuilding"></select></label>
+          <label><span>FLOOR</span><select id="studioFloor"></select></label>
+          <label><span>DAY</span><select id="studioDay"><option>Mon</option><option>Tue</option><option>Wed</option><option>Thu</option><option>Fri</option><option>Sat</option></select></label>
+          <label class="studio-hour"><span>TIME <output id="studioHourLabel">10:00</output></span><input id="studioHour" type="range" min="7" max="20" step="1" value="10" /></label>
+          <div class="studio-layers" role="group" aria-label="Spatial data layer">
+            <span>LAYER</span>
+            <button type="button" data-studio-layer="schedule">TIMETABLE</button>
+            <button type="button" data-studio-layer="capacity">CAPACITY</button>
+            <button type="button" data-studio-layer="energy">ENERGY</button>
+            <button type="button" class="is-active" data-studio-layer="scenario">SCENARIO</button>
+          </div>
+        </div>
+
+        <div class="studio-layout">
+          <article class="panel studio-viewport-panel">
+            <header class="panel-head studio-viewport-head">
+              <div><h2 id="studioModelTitle">Spatial model</h2><span class="panel-context" id="studioModelContext">LOADING ROOM INVENTORY</span></div>
+              <div class="studio-head-tools">
+                <div class="studio-engine-tabs" role="tablist" aria-label="Spatial model scale">
+                  <button class="is-active" type="button" data-studio-mode="floor" role="tab" aria-selected="true">THREE.JS / FLOOR</button>
+                  <button type="button" data-studio-mode="campus" role="tab" aria-selected="false">CESIUM / CAMPUS</button>
+                </div>
+                <div class="studio-view-controls" aria-label="Model view controls">
+                  <button type="button" data-studio-control="rotate-left">ROTATE LEFT</button>
+                  <button type="button" data-studio-control="rotate-right">ROTATE RIGHT</button>
+                  <button type="button" data-studio-control="fit">FIT VIEW</button>
+                  <label><span>ZOOM</span><input id="studioZoom" type="range" min="65" max="155" value="100" /></label>
+                </div>
+              </div>
+            </header>
+            <div class="studio-canvas-wrap">
+              <div class="studio-engine-viewport is-active" id="studioFloorViewport">
+                <div id="studioCanvas" role="img" aria-label="Interactive Three.js campus floor model" tabindex="0"></div>
+              </div>
+              <div class="studio-engine-viewport" id="studioCampusViewport" aria-hidden="true">
+                <div id="studioCampus" role="img" aria-label="Interactive CesiumJS campus-scale model"></div>
+              </div>
+              <div class="studio-engine-badge" id="studioEngineBadge">THREE.JS / ROOM-SCALE WEBGL</div>
+              <div class="studio-canvas-readout">
+                <span id="studioControlHint">LEFT DRAG TO ORBIT / RIGHT DRAG TO PAN</span><i></i><span>WHEEL TO ZOOM</span>
+              </div>
+              <div class="studio-axis" aria-hidden="true"><span class="axis-z">Z</span><span class="axis-y">Y</span><span class="axis-x">X</span></div>
+            </div>
+            <div class="studio-timeline">
+              <div class="studio-stage-brief" id="studioStageBrief" aria-live="polite">
+                <div class="studio-stage-copy">
+                  <span id="studioStageKicker">00 / GOVERNED BASELINE</span>
+                  <strong id="studioStageTitle">Current campus state</strong>
+                  <p id="studioStageDetail">No intervention is applied. This is the comparison state for every modeled response.</p>
+                </div>
+                <div class="studio-stage-targets" id="studioStageTargets" aria-label="Scenario focus targets"></div>
+              </div>
+              <div class="timeline-command">
+                <button class="primary-button" id="studioPlay" type="button">PLAY SCENARIO</button>
+                <div><span>SCENARIO STAGE</span><strong id="studioStageLabel">00 / BASELINE</strong></div>
+              </div>
+              <input id="studioStage" type="range" min="0" max="4" step="1" value="0" aria-label="Compound scenario stage" />
+              <div class="timeline-labels" aria-hidden="true"><span>BASELINE</span><span>DEMAND</span><span>OUTAGE</span><span>SPACE + TIME</span><span>RESPONSE</span></div>
+            </div>
+          </article>
+
+          <aside class="studio-side">
+            <section class="panel studio-inspector">
+              <header class="panel-head"><div><h2>Room inspector</h2><span class="panel-context">SELECTED MODEL ELEMENT</span></div><span class="mono-tag" id="studioRoomState">READY</span></header>
+              <div class="studio-room-title"><span id="studioRoomCode">NO ROOM</span><h3 id="studioRoomName">Select a room in the model</h3><p id="studioRoomType">Room facts will appear here.</p></div>
+              <div class="studio-room-facts" id="studioRoomFacts"></div>
+              <div class="studio-inspector-section"><span>SCHEDULE AT FILTER</span><div id="studioRoomSchedule">No room selected.</div></div>
+              <div class="studio-inspector-section"><span>SCENARIO EFFECT</span><div id="studioRoomScenario">Move the scenario stage to inspect modeled effects.</div></div>
+              <div class="studio-inspector-actions">
+                <button type="button" id="studioAskGenie">ASK GENIE ABOUT THIS FLOOR</button>
+                <button type="button" id="studioOpenScenario">OPEN SCENARIO LAB</button>
+              </div>
+            </section>
+            <section class="panel studio-floor-readout">
+              <header><span>FLOOR READOUT</span><strong id="studioFloorState">BASELINE</strong></header>
+              <div id="studioFloorFacts"></div>
+              <div class="studio-legend" id="studioLegend"></div>
+            </section>
+          </aside>
+        </div>
+
+        <div class="studio-contract" aria-label="Spatial model contract">
+          <div><span>RENDERERS</span><strong>Three.js floor twin and CesiumJS campus context</strong></div>
+          <div><span>SEMANTICS</span><strong>Governed room, schedule, energy, topology, and event records</strong></div>
+          <div><span>GEOMETRY</span><strong>Deterministic model from inventory and topology, not surveyed CAD or GIS</strong></div>
+          <div><span>NEXT IMPORT</span><strong>glTF 2.0 mapped to room IDs, then IFC conversion when real BIM files arrive</strong></div>
+        </div>
+      </section>
+
+      <section class="view" id="view-simulate" aria-labelledby="simulate-title">
+        <div class="view-heading feature-heading">
+          <div>
+            <h1 id="simulate-title">Test campus changes<br /><span class="title-accent">before operations act.</span></h1>
+            <p class="lede">Chain space, timetable, mobility, enrollment, and energy interventions inside a deep-cloned campus state. Compare the before and after state, inspect cascading effects, and keep every assumption visible.</p>
+          </div>
+          <div class="feature-proof"><span>MODEL CAPABILITY</span><strong>5 LINKED ACTION TYPES</strong><p>Every run preserves the current twin as an immutable baseline.</p></div>
+        </div>
+
+        <section class="flagship-scenario" aria-labelledby="flagship-title">
+          <div class="flagship-copy">
+            <span class="flagship-label">FLAGSHIP / COMPOUND MODEL</span>
+            <h2 id="flagship-title">Campus 2030 resilience drill</h2>
+            <p>Stress-test enrollment growth and a room outage, then stage space, timetable, and shuttle responses in one governed branch.</p>
+            <button class="flagship-button" id="runFlagshipSimulation" type="button" disabled>RUN 5-ACTION STRESS TEST</button>
+          </div>
+          <div class="flagship-plan">
+            <header><span>INTERVENTION CHAIN</span><strong id="flagshipPlanStatus">Building plan from the current twin</strong></header>
+            <ol id="flagshipManifest" class="flagship-manifest">
+              <li><span>01</span><strong>WAITING FOR SNAPSHOT</strong><p>The compound plan is derived from current governed records.</p></li>
+            </ol>
+            <div class="flagship-facts" aria-label="Compound model facts">
+              <div><span>LINKED ACTIONS</span><strong>5</strong></div>
+              <div><span>RECOMPUTED DOMAINS</span><strong>5</strong></div>
+              <div><span>UNCERTAINTY DRAWS</span><strong>800</strong></div>
+              <div><span>BASELINE WRITES</span><strong>0</strong></div>
+            </div>
+          </div>
+        </section>
+
+        <div class="scenario-section-heading"><span>SINGLE-INTERVENTION PATHS</span><p>Use these for a focused decision or edit one intervention manually.</p></div>
+        <div class="preset-grid" aria-label="Scenario presets">
+          <button class="preset-card" type="button" data-preset="capacity"><span>01 / SPACE</span><strong>Resolve a capacity mismatch</strong><small>Move an overflowing section into a feasible room.</small></button>
+          <button class="preset-card" type="button" data-preset="transport"><span>02 / MOBILITY</span><strong>Relieve shuttle pressure</strong><small>Add service to the most constrained route.</small></button>
+          <button class="preset-card" type="button" data-preset="growth"><span>03 / GROWTH</span><strong>Stress-test student intake</strong><small>Propagate enrollment growth across the twin.</small></button>
+        </div>
+
+        <div class="sim-grid">
+          <aside class="scenario-builder panel">
+            <header class="panel-head"><div><h2>Manual override</h2><span class="panel-context">SINGLE-ACTION BRANCH</span></div></header>
+            <label class="field"><span>Name</span><input id="scenarioName" value="Operational what-if" maxlength="120" /></label>
+            <label class="field"><span>Objective</span><select id="scenarioObjective"><option value="balanced">Balanced decision</option><option value="space">Space efficiency</option><option value="energy">Energy reduction</option><option value="transport">Transport resilience</option><option value="resilience">Operational resilience</option></select></label>
+            <div class="builder-divider"><span>INTERVENTION</span></div>
+            <label class="field"><span>Type</span><select id="actionType"><option value="close_room">Close a room</option><option value="relocate_section">Relocate a section</option><option value="reschedule_section">Reschedule one session</option><option value="change_intake">Change section intake</option><option value="adjust_bus_frequency">Adjust bus service</option></select></label>
+            <div id="actionFields"></div>
+            <button class="primary-button run-button" id="runSimulation">RUN COUNTERFACTUAL</button>
+            <p class="microcopy">The engine recomputes capacity, conflicts, energy, transport, and the operational score.</p>
+          </aside>
+
+          <div class="simulation-output" id="simulationOutput">
+            <div class="empty-state panel">
+              <div class="empty-orbit"><span></span><i></i></div>
+              <p class="panel-context">SCENARIO OUTPUT</p>
+              <h2>Your first decision has not been tested.</h2>
+              <p>Choose a judge-ready preset or define an intervention. The result will expose primary deltas, secondary effects, uncertainty, and assumptions.</p>
+            </div>
+          </div>
+        </div>
+
+        <section class="panel scenario-history-panel" aria-labelledby="scenario-history-title">
+          <header class="panel-head">
+            <div><h2 id="scenario-history-title">Saved decision runs</h2><span class="panel-context">SCENARIO_RUNS MEMORY</span></div>
+            <span class="panel-note">DATABRICKS</span>
+          </header>
+          <div id="scenarioHistory" class="history-list"></div>
+        </section>
+
+        <section class="panel scenario-compare-panel" aria-labelledby="scenario-compare-title">
+          <header class="panel-head">
+            <div><h2 id="scenario-compare-title">Scenario comparison</h2><span class="panel-context">BEST SAVED OPTION AND TRADE-OFFS</span></div>
+            <span class="panel-note">DECISION</span>
+          </header>
+          <div id="scenarioComparison"></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-explore" aria-labelledby="explore-title">
+        <div class="view-heading feature-heading">
+          <div>
+            <h1 id="explore-title">Inspect the data that<br /><span class="title-accent">grounds every answer.</span></h1>
+            <p class="lede">Inspect the canonical room and timetable contracts that ground Genie and the simulation engine. Relationships use explicit IDs, not inferred joins.</p>
+          </div>
+          <div class="feature-proof"><span>UNITY CATALOG</span><strong>WORKSPACE.CAMPUS_TWIN</strong><p>Governed Delta tables and decision-ready views.</p></div>
+        </div>
+
+        <div class="atlas-proof">
+          <div><span>ROOMS</span><strong id="atlasRoomCount">--</strong></div>
+          <div><span>SESSIONS</span><strong id="atlasSessionCount">--</strong></div>
+          <div><span>BUILDINGS</span><strong id="atlasBuildingCount">--</strong></div>
+          <div><span>DATA SOURCE</span><strong id="atlasSource">--</strong></div>
+        </div>
+        <section class="panel quality-panel" aria-labelledby="data-quality-title">
+          <header class="panel-head">
+            <div><h2 id="data-quality-title">Data foundation readiness</h2><span class="panel-context">GOVERNED TABLES, JOINS, AND GOLD VIEW CONTRACT</span></div>
+            <span class="panel-note">TRUST LAYER</span>
+          </header>
+          <div id="dataQuality"></div>
+        </section>
+        <div class="explore-tabs" role="tablist">
+          <button class="tab-button is-active" data-explore-tab="rooms">ROOM INVENTORY</button>
+          <button class="tab-button" data-explore-tab="schedule">TIMETABLE CONTRACT</button>
+        </div>
+        <div class="filterbar">
+          <label class="search-field"><span>FILTER</span><input id="exploreSearch" type="search" placeholder="Building, room, course, section" /></label>
+          <div class="filter-summary" id="exploreCount">Loading</div>
+        </div>
+        <div class="panel table-panel"><div class="data-table-wrap large" id="exploreTableWrap"></div></div>
+      </section>
+
+      <section class="view" id="view-feedback" aria-labelledby="feedback-title">
+        <div class="view-heading feature-heading">
+          <div>
+            <h1 id="feedback-title">Compare every prediction<br /><span class="title-accent">with the observed outcome.</span></h1>
+            <p class="lede">Compare a predicted outcome with the measured result. Store the residual so future models can be calibrated without pretending that synthetic coefficients are causal truth.</p>
+          </div>
+          <div class="feature-proof"><span>LEARNING UNIT</span><strong>PREDICTED VS OBSERVED</strong><p>Every intervention can become a calibration record.</p></div>
+        </div>
+
+        <div class="feedback-grid">
+          <form class="panel feedback-form" id="feedbackForm">
+            <header class="panel-head"><div><h2>Record outcome</h2><span class="panel-context">OBSERVATION CONTRACT</span></div></header>
+            <label class="field"><span>Metric</span><input id="feedbackMetric" value="room_utilization_pct" required /></label>
+            <div class="field-pair"><label class="field"><span>Predicted</span><input id="feedbackPredicted" type="number" step="any" required /></label><label class="field"><span>Observed</span><input id="feedbackObserved" type="number" step="any" required /></label></div>
+            <label class="field"><span>Notes</span><textarea id="feedbackNotes" rows="4" placeholder="What changed in the real campus?"></textarea></label>
+            <button class="primary-button" type="submit">STORE CALIBRATION RECORD</button>
+          </form>
+          <article class="panel feedback-explainer">
+            <span class="panel-context">THE LEARNING LOOP</span>
+            <h2>Simulate. Implement. Observe. Improve.</h2>
+            <p>A useful twin does not end with a prediction. CampusTwin retains prediction error as governed operational data and keeps the model contract explicit.</p>
+            <div class="loop-visual"><span>SIMULATE</span><i></i><span>IMPLEMENT</span><i></i><span>OBSERVE</span><i></i><span>LEARN</span></div>
+            <div class="equation"><span>RELATIVE ERROR</span><strong>|observed - predicted| / |predicted|</strong></div>
+            <div class="feedback-result" id="feedbackResult">No observation recorded in this session.</div>
+          </article>
+        </div>
+
+        <section class="panel feedback-history-panel" aria-labelledby="feedback-history-title">
+          <header class="panel-head">
+            <div><h2 id="feedback-history-title">Calibration history</h2><span class="panel-context">FEEDBACK RESIDUALS</span></div>
+            <span class="panel-note">LEARNING LOOP</span>
+          </header>
+          <div id="feedbackStats" class="feedback-stats"></div>
+          <div id="feedbackHistory" class="feedback-history-list"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="setupDialog" class="setup-dialog">
+    <form method="dialog" class="dialog-head"><div><h2>Initialize governed storage</h2><span class="panel-context">DATABRICKS</span></div><button class="icon-button" value="cancel" aria-label="Close">CLOSE</button></form>
+    <p>This explicit admin action creates the configured schema, canonical Delta tables, gold views, and a Genie Agent. It seeds generated data only into empty tables.</p>
+    <div class="setup-warning"><strong>Free Edition conscious</strong><span>The app caches snapshots per user and keeps bootstrap opt-in to avoid unnecessary warehouse work.</span></div>
+    <label class="check-field"><input id="createGenie" type="checkbox" checked /><span>Create or link Genie Agent</span></label>
+    <label class="check-field danger-check"><input id="forceReseed" type="checkbox" /><span>Force reseed canonical tables (destructive)</span></label>
+    <button class="primary-button" id="bootstrapButton" type="button">INITIALIZE DATABRICKS</button>
+    <pre class="setup-log" id="setupLog">Waiting for explicit initialization.</pre>
+  </dialog>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite"></div>
+  <script>window.CESIUM_BASE_URL = "/static/vendor/cesium/";</script>
+  <script src="/static/vendor/cesium/Cesium.js"></script>
+  <script type="module" src="/static/app.js?v=judge-demo-1"></script>
+</body>
+</html>

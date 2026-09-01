@@ -1,0 +1,27 @@
+bundle:
+  name: campus-twin
+
+variables:
+  warehouse_id:
+    description: Existing SQL warehouse ID. Databricks Free Edition includes one limited warehouse.
+
+resources:
+  apps:
+    campus_twin:
+      name: campus-twin
+      description: Living campus decision intelligence and counterfactual simulation.
+      source_code_path: ./app
+      user_api_scopes:
+        - sql
+        - genie
+      resources:
+        - name: sql-warehouse
+          description: CampusTwin SQL execution warehouse
+          sql_warehouse:
+            id: ${var.warehouse_id}
+            permission: CAN_USE
+
+targets:
+  dev:
+    mode: development
+    default: true

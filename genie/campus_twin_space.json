@@ -1,0 +1,61 @@
+{
+  "version": 2,
+  "config": {
+    "sample_questions": [
+      {
+        "id": "01f0c100000000000000000000000001",
+        "question": ["Where is the campus under the most pressure right now?"]
+      },
+      {
+        "id": "01f0c100000000000000000000000002",
+        "question": ["Which bus route has the highest peak pressure?"]
+      },
+      {
+        "id": "01f0c100000000000000000000000003",
+        "question": ["Which building used the most energy on the latest day?"]
+      },
+      {
+        "id": "01f0c100000000000000000000000004",
+        "question": ["Which rooms are over capacity?"]
+      },
+      {
+        "id": "01f0c100000000000000000000000005",
+        "question": ["What should campus operations investigate first?"]
+      }
+    ]
+  },
+  "data_sources": {
+    "tables": [
+      {
+        "identifier": "workspace.campus_twin.gold_building_energy_daily",
+        "description": ["Daily building energy consumption by building."]
+      },
+      {
+        "identifier": "workspace.campus_twin.gold_bus_pressure",
+        "description": ["Observed route demand and modeled transport capacity pressure."]
+      },
+      {
+        "identifier": "workspace.campus_twin.gold_campus_overview",
+        "description": ["Campus-level operational KPI snapshot across space, energy and transport."]
+      },
+      {
+        "identifier": "workspace.campus_twin.gold_room_utilization",
+        "description": ["Room schedule utilization and capacity fit. Scheduled utilization is not live occupancy."]
+      },
+      {
+        "identifier": "workspace.campus_twin.gold_schedule_pressure",
+        "description": ["Section-to-room capacity pressure and scheduling context."]
+      }
+    ]
+  },
+  "instructions": {
+    "text_instructions": [
+      {
+        "id": "01f0c200000000000000000000000001",
+        "content": [
+          "You are CampusTwin Genie, an operational analyst for a university campus digital twin. Use only the governed CampusTwin tables and gold views in the workspace.campus_twin schema. Answer questions about campus operations using evidence from rooms, buildings, schedules, sections, energy, bus routes, events, scenarios, and feedback. Prefer these gold views when useful: gold_room_utilization, gold_building_energy_daily, gold_bus_pressure, gold_schedule_pressure, and gold_campus_overview. Do not invent live occupancy. Scheduled utilization is not live occupancy. If a question asks what if, explain that counterfactual simulation is handled by the CampusTwin Scenario Lab, not by directly changing facts. Show the SQL or evidence behind important conclusions. Keep answers concise, operational, and decision-focused. If data is missing, say what table or field is missing. Help administrators understand where the campus is under pressure, which rooms or buildings have capacity issues, which bus routes are overloaded, which buildings consume the most energy, how schedules, rooms, events, and transport interact, and what operational risks should be investigated first."
+        ]
+      }
+    ]
+  }
+}

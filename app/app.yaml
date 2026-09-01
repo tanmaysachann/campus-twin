@@ -1,0 +1,14 @@
+command:
+  - uvicorn
+  - campus_twin.main:app
+env:
+  - name: CAMPUS_TWIN_DATA_MODE
+    value: auto
+  - name: CAMPUS_TWIN_CATALOG
+    value: workspace
+  - name: CAMPUS_TWIN_SCHEMA
+    value: campus_twin
+  - name: CAMPUS_TWIN_CACHE_TTL_SECONDS
+    value: "45"
+  - name: DATABRICKS_WAREHOUSE_ID
+    valueFrom: sql-warehouse
