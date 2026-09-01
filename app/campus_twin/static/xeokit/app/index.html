@@ -74,6 +74,19 @@
             enableEditModels: enableEditModels
         });
 
+        const cameraControl = bimViewer.viewer.cameraControl;
+        cameraControl.navMode = "orbit";
+        cameraControl.followPointer = true;
+        cameraControl.doublePickFlyTo = true;
+        cameraControl.keyboardEnabledOnlyIfMouseover = true;
+        cameraControl.dragRotationRate = 190;
+        cameraControl.mouseWheelDollyRate = 55;
+        cameraControl.touchDollyRate = 0.12;
+        cameraControl.rotationInertia = 0.14;
+        cameraControl.panInertia = 0.18;
+        cameraControl.dollyInertia = 0.1;
+        bimViewer.viewer.cameraFlight.duration = 0.38;
+
         bimViewer.localeService.on("updated", () => {
             const localizedElements = document.querySelectorAll('.xeokit-i18n');
             localizedElements.forEach((localizedElement) => {
@@ -439,6 +452,19 @@
             }
         }
 
+        function setCampusTwinCameraView(view) {
+            const scene = bimViewer.viewer.scene;
+            const ids = scene.objectIds || [];
+            if (!ids.length) return;
+            const [xmin, ymin, zmin, xmax, ymax, zmax] = scene.getAABB(ids);
+            const center = [(xmin + xmax) / 2, (ymin + ymax) / 2, (zmin + zmax) / 2];
+            const diagonal = Math.max(Math.hypot(xmax - xmin, ymax - ymin, zmax - zmin), 1);
+            const target = view === "top"
+                ? { eye: [center[0], center[1] + diagonal, center[2]], look: center, up: [0, 0, -1] }
+                : { eye: [center[0] + diagonal * 0.72, center[1] + diagonal * 0.58, center[2] + diagonal * 0.72], look: center, up: [0, 1, 0] };
+            bimViewer.viewer.cameraFlight.flyTo(target);
+        }
+
         function announceWhenReady() {
             let attempts = 0;
             const timer = window.setInterval(() => {
@@ -465,6 +491,7 @@
             if (event.origin !== window.location.origin || event.source !== window.parent) return;
             if (event.data?.type === "campus-twin-xeokit-state") applyCampusTwinState(event.data.state);
             if (event.data?.type === "campus-twin-xeokit-fit") bimViewer.viewFitAll();
+            if (event.data?.type === "campus-twin-xeokit-view" && event.data.view) setCampusTwinCameraView(event.data.view);
             if (event.data?.type === "campus-twin-xeokit-tab" && event.data.tab) bimViewer.openTab(event.data.tab);
         });
 

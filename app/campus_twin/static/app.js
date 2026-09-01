@@ -1,5 +1,5 @@
 import { api } from "./api.js";
-import { createTwinStudio } from "./twin-studio.js?v=xeokit-3";
+import { createTwinStudio } from "./twin-studio.js?v=nav-4";
 
 const state = {
   summary: null,
@@ -67,6 +67,9 @@ const viewLabels = {
   explore: "Data atlas",
   feedback: "Outcome loop",
 };
+const viewOrder = Object.keys(viewLabels);
+const viewScrollPositions = new Map();
+let activeView = "overview";
 
 const twinStudio = createTwinStudio({
   root: "#view-studio",
@@ -75,22 +78,45 @@ const twinStudio = createTwinStudio({
   onOpenScenario: () => navigate("simulate"),
 });
 
-function navigate(view) {
+function navigate(view, { historyMode = "push", restoreScroll = true } = {}) {
+  if (!Object.hasOwn(viewLabels, view)) return;
+  const changedView = activeView !== view;
+  if (changedView) viewScrollPositions.set(activeView, window.scrollY);
+  activeView = view;
   $$(".view").forEach(node => node.classList.toggle("is-visible", node.id === `view-${view}`));
-  $$(".nav-item").forEach(node => node.classList.toggle("is-active", node.dataset.view === view));
+  $$(".nav-item").forEach(node => {
+    const selected = node.dataset.view === view;
+    node.classList.toggle("is-active", selected);
+    if (selected) node.setAttribute("aria-current", "page");
+    else node.removeAttribute("aria-current");
+  });
   $("#viewCrumb").textContent = viewLabels[view] || view;
-  history.replaceState(null, "", `#${view}`);
-  window.scrollTo(0, 0);
+  $("#workspaceSwitcher").value = view;
+  if (historyMode === "push" && location.hash !== `#${view}`) history.pushState({ view }, "", `#${view}`);
+  if (historyMode === "replace") history.replaceState({ view }, "", `#${view}`);
+  const targetScroll = restoreScroll
+    ? (changedView ? viewScrollPositions.get(view) || 0 : window.scrollY)
+    : 0;
+  window.requestAnimationFrame(() => window.scrollTo({ top: targetScroll, behavior: "auto" }));
 }
 
 function bindNavigation() {
-  $$("[data-view]").forEach(button => button.addEventListener("click", () => navigate(button.dataset.view)));
+  $$("[data-view]").forEach((button, index) => {
+    button.addEventListener("click", () => navigate(button.dataset.view));
+    button.title = `${viewLabels[button.dataset.view]} (Alt+${index + 1})`;
+    button.setAttribute("aria-keyshortcuts", `Alt+${index + 1}`);
+  });
   $$("[data-nav]").forEach(link => link.addEventListener("click", event => {
     event.preventDefault();
     navigate(link.dataset.nav);
   }));
+  $("#workspaceSwitcher").addEventListener("change", event => navigate(event.target.value));
   const initial = location.hash.replace("#", "");
-  if (Object.hasOwn(viewLabels, initial)) navigate(initial);
+  navigate(Object.hasOwn(viewLabels, initial) ? initial : "overview", { historyMode: "replace", restoreScroll: false });
+  window.addEventListener("popstate", () => {
+    const view = location.hash.replace("#", "");
+    if (Object.hasOwn(viewLabels, view)) navigate(view, { historyMode: "none" });
+  });
 }
 
 function renderSource() {
@@ -1180,6 +1206,11 @@ bindFeedback();
 bindSetup();
 $("#refreshButton").addEventListener("click", loadAll);
 window.addEventListener("keydown", event => {
-  if ((event.key === "r" || event.key === "R") && !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) loadAll();
+  const isEditing = ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName);
+  if ((event.key === "r" || event.key === "R") && !isEditing) loadAll();
+  if (event.altKey && !isEditing && /^[1-6]$/.test(event.key)) {
+    event.preventDefault();
+    navigate(viewOrder[Number(event.key) - 1]);
+  }
 });
 loadAll();

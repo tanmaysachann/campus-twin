@@ -390,6 +390,9 @@ export function createTwinStudio({ root, notify, onAskGenie, onOpenScenario }) {
       sendToViewer({ type: "campus-twin-xeokit-tab", tab: button.dataset.xeokitTab });
     }));
     host.querySelector("[data-xeokit-action='fit']")?.addEventListener("click", () => sendToViewer({ type: "campus-twin-xeokit-fit" }));
+    host.querySelectorAll("[data-xeokit-view]").forEach(button => button.addEventListener("click", () => {
+      sendToViewer({ type: "campus-twin-xeokit-view", view: button.dataset.xeokitView });
+    }));
     elements.stageTargets.addEventListener("click", event => {
       if (event.target.closest("[data-stage-target]")) sendViewerState({ focus: true });
     });
