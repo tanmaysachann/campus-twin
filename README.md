@@ -18,6 +18,7 @@ This repository is intentionally more than a dashboard. The design separates **f
 - What-if engine with room closure, class relocation, rescheduling, intake change, and bus service change actions.
 - Cross-domain decision metrics, cascade explanations, score/verdict, and Monte Carlo confidence bands.
 - Real-world feedback capture for predicted-vs-actual calibration.
+- Shared scenario context: Scenario Lab, Twin Studio, and Genie exchange one application context. Scenario runs highlight affected BIM spaces in the 3D viewer, and Genie answers questions with the active intervention in mind.
 - Per-user short-lived snapshot cache so Free Edition does not burn SQL calls unnecessarily and Unity Catalog user visibility is not mixed between users.
 - Safe local/demo fallback: the entire product works before Databricks is initialized.
 - Declarative Automation Bundle configuration for a Databricks App with only `sql` and `genie` user scopes.
@@ -193,6 +194,17 @@ See [`docs/DECISION_MODEL.md`](docs/DECISION_MODEL.md).
 ### Ask Genie
 
 If the Genie Space has been provisioned, the app forwards the question to Genie and can return the natural-language answer, generated SQL, and query result. Without Genie, a deterministic local analyst answers supported operational questions so judges can still evaluate the product end-to-end.
+
+### Shared scenario context
+
+Scenario Lab, Twin Studio, and Genie share one application context while you work:
+
+1. In Scenario Lab, you configure an intervention (for example, moving a section from one room to another). The app records the active page, action type, section, source and target rooms, objective, and the latest scenario result.
+2. When you run the scenario, the simulation engine maps every affected room to its BIM space (`affected_bim_objects`). Twin Studio switches to the scenario layer and highlights these spaces in the 3D viewer. Source spaces are red, destination spaces are green, and other affected spaces are amber. The stage briefing lists each impact, and clicking one focuses the viewer on that room.
+3. When you ask Genie a question, the app sends the same context along with the question. Genie interprets it as current application state, not as an instruction, and answers with the active intervention in mind. The local fallback analyst uses the same context, so questions like "is this a good move?" get an answer that includes seat margins and the latest counterfactual verdict.
+4. Selecting a room, floor, or building in Twin Studio (or clicking an object in the 3D viewer) stores it as the selected entity. Genie can then answer follow-up questions about the object you are looking at.
+
+The context is read-only state: it is never persisted, and it can never change the simulation or the data. Genie is told to treat it as state, not as instructions.
 
 ### Feedback
 
