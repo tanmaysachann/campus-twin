@@ -13,6 +13,7 @@ from ..models import (
     CascadeEffect,
     ConfidenceBand,
     MetricDelta,
+    ScenarioBIMImpact,
     ScenarioRequest,
     ScenarioResult,
 )
@@ -231,6 +232,62 @@ def _confidence(before: CampusMetrics, after: CampusMetrics, samples: int, seed:
     return result
 
 
+def _spatial_impact(snapshot: CampusSnapshot, twin: CampusSnapshot, request: ScenarioRequest) -> list[ScenarioBIMImpact]:
+    before_sessions = {session.id: session for session in snapshot.schedules}
+    after_sessions = {session.id: session for session in twin.schedules}
+    impacted_rooms: list[tuple[str, str]] = []
+
+    for action in request.actions:
+        params = action.params
+        if action.type == ActionType.CLOSE_ROOM:
+            closed_room_id = str(params.get("room_id", ""))
+            impacted_rooms.append((closed_room_id, "source"))
+            for session_id, before_session in before_sessions.items():
+                if before_session.room_id == closed_room_id:
+                    destination = after_sessions.get(session_id)
+                    if destination and destination.room_id != closed_room_id:
+                        impacted_rooms.append((destination.room_id, "destination"))
+        elif action.type == ActionType.RELOCATE_SECTION:
+            section_id = str(params.get("section_id", ""))
+            for session in snapshot.schedules:
+                if session.section_id == section_id:
+                    impacted_rooms.append((session.room_id, "source"))
+            for session in twin.schedules:
+                if session.section_id == section_id:
+                    impacted_rooms.append((session.room_id, "destination"))
+        elif action.type == ActionType.RESCHEDULE_SECTION:
+            section_id = str(params.get("section_id", ""))
+            before_session = next((session for session in snapshot.schedules if session.section_id == section_id), None)
+            if before_session:
+                impacted_rooms.append((before_session.room_id, "source"))
+                after_session = after_sessions.get(before_session.id)
+                if after_session:
+                    impacted_rooms.append((after_session.room_id, "destination"))
+        elif action.type == ActionType.CHANGE_INTAKE:
+            section_id = str(params.get("section_id", ""))
+            for session in twin.schedules:
+                if session.section_id == section_id:
+                    impacted_rooms.append((session.room_id, "affected"))
+
+    space_by_room = {space.room_id: space for space in twin.bim_spaces if space.room_id}
+    result: list[ScenarioBIMImpact] = []
+    seen: set[tuple[str, str]] = set()
+    for room_id, role in impacted_rooms:
+        key = (room_id, role)
+        space = space_by_room.get(room_id)
+        if not space or key in seen:
+            continue
+        seen.add(key)
+        result.append(ScenarioBIMImpact(
+            room_id=room_id,
+            bim_space_id=space.id,
+            render_object_id=space.render_object_id,
+            source_model_id=space.source_model_id,
+            role=role,
+        ))
+    return result
+
+
 def simulate(snapshot: CampusSnapshot, request: ScenarioRequest) -> ScenarioResult:
     before = compute_metrics(snapshot)
     twin, log, effects = apply_actions(snapshot, request)
@@ -275,5 +332,6 @@ def simulate(snapshot: CampusSnapshot, request: ScenarioRequest) -> ScenarioResu
         confidence=_confidence(before, after, request.uncertainty_samples, seed),
         assumptions=assumptions,
         action_log=log,
+        affected_bim_objects=_spatial_impact(snapshot, twin, request),
         created_at=datetime.now(timezone.utc),
     )

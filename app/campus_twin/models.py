@@ -174,6 +174,14 @@ class ScenarioRequest(BaseModel):
     uncertainty_samples: int = Field(default=220, ge=40, le=1200)
 
 
+class ScenarioBIMImpact(BaseModel):
+    room_id: str
+    bim_space_id: str
+    render_object_id: str
+    source_model_id: str
+    role: Literal["source", "destination", "affected"]
+
+
 class ScenarioResult(BaseModel):
     scenario_id: str
     name: str
@@ -187,12 +195,50 @@ class ScenarioResult(BaseModel):
     confidence: list[ConfidenceBand]
     assumptions: list[str]
     action_log: list[str]
+    affected_bim_objects: list[ScenarioBIMImpact] = Field(default_factory=list)
     created_at: datetime
+
+
+class SelectedSpatialEntity(BaseModel):
+    entity_type: Literal["room", "floor", "building", "bim_object"]
+    entity_id: str
+    name: str | None = None
+    room_id: str | None = None
+    building_id: str | None = None
+    floor: int | None = None
+    bim_space_id: str | None = None
+    render_object_id: str | None = None
+
+
+class ScenarioResultContext(BaseModel):
+    scenario_id: str
+    name: str
+    objective: str
+    verdict: Literal["recommended", "review", "reject"]
+    score: float
+    deltas: list[MetricDelta] = Field(default_factory=list, max_length=8)
+    cascade_effects: list[CascadeEffect] = Field(default_factory=list, max_length=12)
+    affected_bim_objects: list[ScenarioBIMImpact] = Field(default_factory=list, max_length=24)
+
+
+class ApplicationContext(BaseModel):
+    active_page: str = Field(max_length=40)
+    intervention_type: ActionType | None = None
+    section_id: str | None = Field(default=None, max_length=80)
+    source_room_id: str | None = Field(default=None, max_length=80)
+    source_room_ids: list[str] = Field(default_factory=list, max_length=12)
+    target_room_id: str | None = Field(default=None, max_length=80)
+    objective: Literal["balanced", "space", "energy", "transport", "resilience"] | None = None
+    intervention_params: dict[str, str | int | float | bool] = Field(default_factory=dict, max_length=12)
+    affected_bim_objects: list[ScenarioBIMImpact] = Field(default_factory=list, max_length=24)
+    selected_entity: SelectedSpatialEntity | None = None
+    scenario_result: ScenarioResultContext | None = None
 
 
 class GenieRequest(BaseModel):
     question: str = Field(min_length=2, max_length=4000)
     conversation_id: str | None = None
+    context: ApplicationContext | None = None
 
 
 class GenieAnswer(BaseModel):
